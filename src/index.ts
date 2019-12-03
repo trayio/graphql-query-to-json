@@ -151,5 +151,9 @@ export const graphQlQueryToJson = (
     )
     console.warn({concatenateObjectsOnSameLevel})
 
-    return JSON.parse(concatenateObjectsOnSameLevel)
+    const concatenatePropertiesOnSameLevel = normaliseSpaces(
+        concatenateObjectsOnSameLevel
+    ).replace(/" "/g, '", "')
+
+    return JSON.parse(concatenatePropertiesOnSameLevel)
 }

@@ -91,7 +91,7 @@ describe("Simple queries", () => {
 })
 
 describe("Simple mutations", () => {
-    it("Simple mutation using string arguments with sibling queries", () => {
+    it("Simple mutation using string argument with sibling queries", () => {
         const mutation = `
         mutation {
             getPersonalStuff(name: "PETER") {
@@ -110,6 +110,39 @@ describe("Simple mutations", () => {
                 getPersonalStuff: {
                     __args: {
                         name: "PETER",
+                    },
+                    personal: {
+                        name: true,
+                        address: true,
+                    },
+                    other: {
+                        parents: true,
+                    },
+                },
+            },
+        })
+    })
+
+    it("Simple mutation using multiple string arguments with sibling queries", () => {
+        const mutation = `
+        mutation {
+            getPersonalStuff(name: "AMADEUS", lastName: "MOZART") {
+                personal {
+                    name
+                    address
+                }
+                other {
+                    parents
+                }
+            }
+        }
+        `
+        expect(graphQlQueryToJson(mutation)).toEqual({
+            mutation: {
+                getPersonalStuff: {
+                    __args: {
+                        name: "AMADEUS",
+                        lastName: "MOZART",
                     },
                     personal: {
                         name: true,
