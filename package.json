@@ -1,37 +1,20 @@
 {
-  "name": "graphql-to-json",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "",
-  "license": "ISC",
-  "devDependencies": {
-    "eslint": "^6.7.2",
-    "eslint-config-rickschubert": "^1.0.11",
-    "husky": "^3.1.0",
-    "jest": "^24.9.0",
-    "lint-staged": "^9.5.0",
-    "prettier": "^1.19.1",
-    "typescript": "^3.7.2"
-  },
-  "lint-staged": {
-    "linters": {
-      "*.{ts,tsx}": [
-        "prettier --write",
-        "eslint --fix",
-        "git add"
-      ],
-      "*.{json}": [
-        "prettier --write",
-        "git add"
-      ]
+    "name": "graphql-to-json",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
     },
-    "ignore": [
-      "node_modules/*",
-      "dist/*"
-    ]
-  }
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "eslint": "^6.7.2",
+        "eslint-config-rickschubert": "^1.0.11",
+        "husky": "^3.1.0",
+        "jest": "^24.9.0",
+        "lint-staged": "^9.5.0",
+        "prettier": "^1.19.1",
+        "typescript": "^3.7.2"
+    }
 }
