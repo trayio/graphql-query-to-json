@@ -9,7 +9,7 @@
         "modules": true
       }
     },
-    "plugins": ["@typescript-eslint"],
+    "plugins": ["@typescript-eslint", "jest"],
     "settings": {
       "import/resolver": {
         "node": {
@@ -17,5 +17,8 @@
           "paths": ["."]
         }
       }
+    },
+    "env": {
+      "jest/globals": true
     }
 }

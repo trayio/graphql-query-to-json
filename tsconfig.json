@@ -9,7 +9,7 @@
         "declaration": true,
         "moduleResolution": "node",
         "allowSyntheticDefaultImports": true,
-        "types": ["node", "webdriverio"]
+        "types": ["jest"]
     },
     "include": ["src/**/*"],
     "exclude": ["./node_modules", "./dist", "prettier.config.js"]
