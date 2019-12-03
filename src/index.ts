@@ -52,6 +52,7 @@ const normaliseQuery = (sourceQuery: string) => {
         .replace(/\n/g, " ")
         .replace(/\t/g, " ")
         .replace(/ +/g, " ")
+        .replace(/,/g, "")
 }
 
 const normaliseSpaces = (string) => {
@@ -64,11 +65,16 @@ const removeDanglingCommas = (stringQuery: string) => {
     return normalised.replace(/, }/g, " }")
 }
 
-export const graphQlQueryToJson = (body: any) => {
-    const normalisedQuery = normaliseQuery(body.query)
+export const graphQlQueryToJson = (
+    query: string,
+    options: {
+        variables?: variablesObject
+    } = {}
+) => {
+    const normalisedQuery = normaliseQuery(query)
     console.warn({normalisedQuery})
-    const variablesMovedIntoQuery = body.variables
-        ? moveVariablesIntoNormalisedQuery(normalisedQuery, body.variables)
+    const variablesMovedIntoQuery = options.variables
+        ? moveVariablesIntoNormalisedQuery(normalisedQuery, options.variables)
         : normalisedQuery
     const withoutQueryName = removeQueryName(variablesMovedIntoQuery)
     console.warn({withoutQueryName})
@@ -129,5 +135,11 @@ export const graphQlQueryToJson = (body: any) => {
     )
     console.warn({withoutDanglingCommas})
 
-    return JSON.parse(withoutDanglingCommas)
+    const concatenateObjectsOnSameLevel = withoutDanglingCommas.replace(
+        /} "/g,
+        '}, "'
+    )
+    console.warn({concatenateObjectsOnSameLevel})
+
+    return JSON.parse(concatenateObjectsOnSameLevel)
 }

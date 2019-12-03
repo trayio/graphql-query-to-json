@@ -9,7 +9,7 @@ describe("Simple queries", () => {
                 }
             }
         `
-        expect(graphQlQueryToJson({query})).toEqual({
+        expect(graphQlQueryToJson(query)).toEqual({
             query: {
                 viewer: {
                     theOnlyPropertyIWant: true,
@@ -27,11 +27,63 @@ describe("Simple queries", () => {
                 }
             }
         `
-        expect(graphQlQueryToJson({query})).toEqual({
+        expect(graphQlQueryToJson(query)).toEqual({
             query: {
                 viewer: {
                     propertyOne: true,
                     propertyTwo: true,
+                },
+            },
+        })
+    })
+
+    it("Two properties separated by commas", () => {
+        const query = `
+            query {
+                viewer {
+                    propertyOne,
+                    propertyTwo
+                }
+            }
+        `
+        expect(graphQlQueryToJson(query)).toEqual({
+            query: {
+                viewer: {
+                    propertyOne: true,
+                    propertyTwo: true,
+                },
+            },
+        })
+    })
+
+    it("Nested simple query using commas", () => {
+        const query = `
+            query {
+                viewer {
+                    propertyOne,
+                    propertyTwo
+                }
+                nested {
+                    evenDeeper {
+                        nestedOne,
+                        nestedTwo,
+                        nestedThree
+                    }
+                }
+            }
+        `
+        expect(graphQlQueryToJson(query)).toEqual({
+            query: {
+                viewer: {
+                    propertyOne: true,
+                    propertyTwo: true,
+                },
+                nested: {
+                    evenDeeper: {
+                        nestedOne: true,
+                        nestedTwo: true,
+                        nestedThree: true,
+                    },
                 },
             },
         })
