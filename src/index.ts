@@ -61,8 +61,8 @@ const normaliseSpaces = (string) => {
 
 const removeDanglingCommas = (stringQuery: string) => {
     const normalised = normaliseSpaces(stringQuery)
-    console.warn({normalised})
-    return normalised.replace(/, }/g, " }")
+    const noDangling = normalised.replace(/, }/g, " }")
+    return normaliseSpaces(noDangling)
 }
 
 const placeMutationsArgumentsInsideArgsObject = (stringQuery: string) => {
@@ -77,7 +77,9 @@ const placeMutationsArgumentsInsideArgsObject = (stringQuery: string) => {
         }
     )
 
-    return argumentsAsArgsBracketFix
+    const normalised = normaliseSpaces(argumentsAsArgsBracketFix)
+
+    return normalised
 }
 
 export const graphQlQueryToJson = (
