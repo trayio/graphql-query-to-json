@@ -19,19 +19,19 @@
   },
   "lint-staged": {
     "linters": {
-        "*.{ts,tsx}": [
-            "prettier --write",
-            "eslint --fix",
-            "git add"
-        ],
-        "*.{json}": [
-            "prettier --write",
-            "git add"
-        ]
+      "*.{ts,tsx}": [
+        "prettier --write",
+        "eslint --fix",
+        "git add"
+      ],
+      "*.{json}": [
+        "prettier --write",
+        "git add"
+      ]
     },
     "ignore": [
-        "node_modules/*",
-        "dist/*"
+      "node_modules/*",
+      "dist/*"
     ]
-},
+  }
 }
