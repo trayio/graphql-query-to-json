@@ -1,11 +1,11 @@
 {
-      "*.{ts,tsx}": [
+    "*.{ts,tsx}": [
         "prettier --write",
         "eslint --fix",
         "git add"
-      ],
-      "*.{json}": [
+    ],
+    "*.{json}": [
         "prettier --write",
         "git add"
-      ]
+    ]
   }
