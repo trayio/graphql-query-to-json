@@ -81,15 +81,24 @@ export const graphQlQueryToJson = (
 
     console.warn()
 
-    let argumentsAsArgs = withoutQueryName.replace(/\(.+?\)/g, (match) => {
-        return match.replace("(", ": { __args: { ").replace(")", " }")
+    const argumentsAsArgs = withoutQueryName.replace(/\(.+?\)/g, (match) => {
+        console.warn(match)
+        return match.replace("(", " { __args { ").replace(")", " }")
+        // return match.replace("(", ": { __args: { ").replace(")", " }")
     })
-    argumentsAsArgs = normaliseSpaces(argumentsAsArgs)
     console.log({argumentsAsArgs})
+
+    const argumentsAsArgsBracketFix = normaliseSpaces(argumentsAsArgs).replace(
+        /__args {.+?{/g,
+        (match) => {
+            return match.replace(/{$/, " ")
+        }
+    )
+    console.warn({argumentsAsArgsBracketFix})
 
     console.warn()
 
-    const colonsBeforeCurlys = argumentsAsArgs.replace(
+    const colonsBeforeCurlys = argumentsAsArgsBracketFix.replace(
         /(?:[A-Z]+) {/gi,
         (match) => {
             return match.replace(" {", ": {")
@@ -114,7 +123,6 @@ export const graphQlQueryToJson = (
     const doubleQuoteVariableNames = withOuterCurlys.replace(
         /[A-Z_]+:/gi,
         (varName) => {
-            console.warn(varName)
             return `"${varName.replace(":", '":')}`
         }
     )

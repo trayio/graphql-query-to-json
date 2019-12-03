@@ -90,6 +90,40 @@ describe("Simple queries", () => {
     })
 })
 
+describe("Simple mutations", () => {
+    it("Simple mutation using string arguments with sibling queries", () => {
+        const mutation = `
+        mutation {
+            getPersonalStuff(name: "PETER") {
+                personal {
+                    name
+                    address
+                }
+                other {
+                    parents
+                }
+            }
+        }
+        `
+        expect(graphQlQueryToJson(mutation)).toEqual({
+            mutation: {
+                getPersonalStuff: {
+                    __args: {
+                        name: "PETER",
+                    },
+                    personal: {
+                        name: true,
+                        address: true,
+                    },
+                    other: {
+                        parents: true,
+                    },
+                },
+            },
+        })
+    })
+})
+
 /* eslint-disable */
 const body = {
     operationName: "GetAuthenticationsPrivate",
