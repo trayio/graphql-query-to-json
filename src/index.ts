@@ -65,6 +65,21 @@ const removeDanglingCommas = (stringQuery: string) => {
     return normalised.replace(/, }/g, " }")
 }
 
+const placeMutationsArgumentsInsideArgsObject = (stringQuery: string) => {
+    const argumentsAsArgs = stringQuery.replace(/\(.+?\)/g, (match) => {
+        return match.replace("(", " { __args { ").replace(")", " }")
+    })
+
+    const argumentsAsArgsBracketFix = normaliseSpaces(argumentsAsArgs).replace(
+        /__args {.+?{/g,
+        (match) => {
+            return match.replace(/{$/, " ")
+        }
+    )
+
+    return argumentsAsArgsBracketFix
+}
+
 export const graphQlQueryToJson = (
     query: string,
     options: {
@@ -78,27 +93,12 @@ export const graphQlQueryToJson = (
         : normalisedQuery
     const withoutQueryName = removeQueryName(variablesMovedIntoQuery)
     console.warn({withoutQueryName})
-
-    console.warn()
-
-    const argumentsAsArgs = withoutQueryName.replace(/\(.+?\)/g, (match) => {
-        console.warn(match)
-        return match.replace("(", " { __args { ").replace(")", " }")
-        // return match.replace("(", ": { __args: { ").replace(")", " }")
-    })
-    console.log({argumentsAsArgs})
-
-    const argumentsAsArgsBracketFix = normaliseSpaces(argumentsAsArgs).replace(
-        /__args {.+?{/g,
-        (match) => {
-            return match.replace(/{$/, " ")
-        }
+    const argumentsAsArgs = placeMutationsArgumentsInsideArgsObject(
+        withoutQueryName
     )
-    console.warn({argumentsAsArgsBracketFix})
+    console.warn({argumentsAsArgs})
 
-    console.warn()
-
-    const colonsBeforeCurlys = argumentsAsArgsBracketFix.replace(
+    const colonsBeforeCurlys = argumentsAsArgs.replace(
         /(?:[A-Z]+) {/gi,
         (match) => {
             return match.replace(" {", ": {")
