@@ -2,7 +2,7 @@ type variablesObject = {
     [variableName: string]: any
 }
 
-const debugLog = (...args: any) => {
+export const debugLog = (...args: any) => {
     if (process.env.__GQTOJSON_DEBUG === "true") {
         // eslint-disable-next-line no-console
         console.log(...args)
@@ -72,14 +72,9 @@ const removeDanglingCommas = (stringQuery: string) => {
 
 const placeMutationsArgumentsInsideArgsObject = (stringQuery: string) => {
     const argumentsAsArgs = stringQuery.replace(/\(.+?\)/g, (match) => {
-        debugLog("argumentsAsArgsInsideMatch", match)
-        const replacement = match.replace("(", " { __args { ").replace(")", "}").replace(/[A-Z]+ [A-Z]+/gi, (match) => {
-            return match.replace(" ", ", ")
-        })
-        debugLog({replacement})
+        const replacement = match.replace("(", " { __args { ").replace(")", "}")
         return replacement
     })
-    debugLog("argumentsAsArgsInside", argumentsAsArgs)
 
     const removeImpossibleBracketCombinations = normaliseSpaces(argumentsAsArgs).replace(/} {/g, "} ")
 
