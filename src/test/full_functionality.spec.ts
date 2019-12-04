@@ -1,4 +1,5 @@
 import {graphQlQueryToJson} from "../index"
+import { debuglog } from "util"
 
 describe("Simple queries", () => {
     it("Single property", () => {
@@ -119,6 +120,42 @@ describe("Simple queries", () => {
                     },
                 },
             },
+        })
+    })
+
+    it("Simple query using variables", () => {
+        const query = `
+        query GetThisShit($name: String, $lastName: String) {
+            viewer {
+                personal(criteria: {
+                    name: $name,
+                    lastName: $lastName
+                }) {
+                    name
+                    address
+                }
+            }
+        }
+        `
+        const result = graphQlQueryToJson(query, {variables: {
+            name: "PETER",
+            lastName: "SCHMIDT"
+        }})
+        expect(result).toEqual({
+            query: {
+                viewer: {
+                    personal: {
+                        __args: {
+                            criteria: {
+                                name: "PETER",
+                                lastName: "SCHMIDT"
+                            }
+                        },
+                        name: true,
+                        address: true
+                    }
+                }
+            }
         })
     })
 })

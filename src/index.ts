@@ -72,17 +72,18 @@ const removeDanglingCommas = (stringQuery: string) => {
 
 const placeMutationsArgumentsInsideArgsObject = (stringQuery: string) => {
     const argumentsAsArgs = stringQuery.replace(/\(.+?\)/g, (match) => {
-        return match.replace("(", " { __args { ").replace(")", " }")
+        debugLog("argumentsAsArgsInsideMatch", match)
+        const replacement = match.replace("(", " { __args { ").replace(")", "}").replace(/[A-Z]+ [A-Z]+/gi, (match) => {
+            return match.replace(" ", ", ")
+        })
+        debugLog({replacement})
+        return replacement
     })
+    debugLog("argumentsAsArgsInside", argumentsAsArgs)
 
-    const argumentsAsArgsBracketFix = normaliseSpaces(argumentsAsArgs).replace(
-        /__args {.+?{/g,
-        (match) => {
-            return match.replace(/{$/, " ")
-        }
-    )
+    const removeImpossibleBracketCombinations = normaliseSpaces(argumentsAsArgs).replace(/} {/g, "} ")
 
-    const normalised = normaliseSpaces(argumentsAsArgsBracketFix)
+    const normalised = normaliseSpaces(removeImpossibleBracketCombinations)
 
     return normalised
 }
@@ -160,6 +161,11 @@ export const graphQlQueryToJson = (
     const concatenatePropertiesOnSameLevel = normaliseSpaces(
         concatenateObjectsOnSameLevel
     ).replace(/" "/g, '", "')
+    debugLog({concatenatePropertiesOnSameLevel})
 
-    return JSON.parse(concatenatePropertiesOnSameLevel)
+    const concatenatePropertiesAfterObjectOnSameLevel = normaliseSpaces(concatenatePropertiesOnSameLevel).replace(/}"[A-Z]+"/gi, (match) => {
+        return match.replace('}"', '}, "')
+    })
+
+    return JSON.parse(concatenatePropertiesAfterObjectOnSameLevel)
 }
