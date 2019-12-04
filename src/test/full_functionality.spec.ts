@@ -88,6 +88,39 @@ describe("Simple queries", () => {
             },
         })
     })
+
+    it("Nested simple query using commas with custom query name", () => {
+        const query = `
+            query GetThatStuff {
+                viewer {
+                    propertyOne,
+                    propertyTwo
+                }
+                nested {
+                    evenDeeper {
+                        nestedOne,
+                        nestedTwo,
+                        nestedThree
+                    }
+                }
+            }
+        `
+        expect(graphQlQueryToJson(query)).toEqual({
+            query: {
+                viewer: {
+                    propertyOne: true,
+                    propertyTwo: true,
+                },
+                nested: {
+                    evenDeeper: {
+                        nestedOne: true,
+                        nestedTwo: true,
+                        nestedThree: true,
+                    },
+                },
+            },
+        })
+    })
 })
 
 describe("Simple mutations", () => {
