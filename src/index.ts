@@ -136,7 +136,7 @@ export const graphQlQueryToJson = (
     debugLog({doubleQuoteVariableNames})
 
     const orphanPropertiesMarkedTrue = doubleQuoteVariableNames.replace(
-        /(?<!") [A-Z]+/gi,
+        /(?<!") [A-Z_]+/gi,
         (orphan) => {
             return `"${orphan.trim()}": true, `
         }
@@ -162,17 +162,17 @@ export const graphQlQueryToJson = (
 
     const concatenatePropertiesAfterObjectOnSameLevel = normaliseSpaces(
         concatenatePropertiesOnSameLevel
-    ).replace(/}"[A-Z]+"/gi, (match) => {
+    ).replace(/}"[A-Z_]+"/gi, (match) => {
         return match.replace('}"', '}, "')
     })
 
     const wrapAliasesInAliasForObject = normaliseSpaces(
         concatenatePropertiesAfterObjectOnSameLevel
-    ).replace(/"[A-Z]+": "[A-Z]+":.+/gi, (match) => {
+    ).replace(/"[A-Z_]+": "[A-Z_]+":.+/gi, (match) => {
         let replacement = match
-        const aliasFor = match.match(/"[A-Z]+": "([A-Z]+)"/i)
+        const aliasFor = match.match(/"[A-Z_]+": "([A-Z_]+)"/i)
         const actualProp = aliasFor[1]
-        const alias = aliasFor.input.match(/"([A-Z]+)"/i)[1]
+        const alias = aliasFor.input.match(/"([A-Z_]+)"/i)[1]
         replacement = replacement.replace(new RegExp(`"${actualProp}": `), "")
         replacement = replacement.replace(
             `"${alias}": {`,

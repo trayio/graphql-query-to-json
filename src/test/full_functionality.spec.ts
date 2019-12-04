@@ -228,7 +228,7 @@ describe("Simple mutations", () => {
     })
 })
 
-describe("GraphQL aliases", () => {
+describe("Aliases", () => {
     it("Simple example with aliases", () => {
         const query = `
             query {
