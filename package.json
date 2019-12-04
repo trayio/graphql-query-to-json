@@ -1,5 +1,5 @@
 {
-    "name": "graphql-to-json",
+    "name": "graphql-query-to-json",
     "version": "1.0.0",
     "description": "",
     "main": "index.js",
