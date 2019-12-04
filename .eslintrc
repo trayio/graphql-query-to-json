@@ -20,5 +20,8 @@
     },
     "env": {
       "jest/globals": true
+    },
+    "rules": {
+      "no-console": "error"
     }
 }

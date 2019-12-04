@@ -2,18 +2,23 @@ type variablesObject = {
     [variableName: string]: any
 }
 
+const debugLog = (...args: any) => {
+    if (process.env.__GQTOJSON_DEBUG === "true") {
+        // eslint-disable-next-line no-console
+        console.log(...args)
+    }
+}
+
 const moveVariablesIntoNormalisedQuery = (
     normalisedQuery: string,
     variables: variablesObject
 ) => {
     let variablesMovedIntoQuery = normalisedQuery
-    // @ts-ignore // TODO: This should not be ignored
     Object.entries(variables).forEach((variable) => {
         const variableType = variablesMovedIntoQuery.match(
             new RegExp(`\\$${variable[0]}: .+?(?:,|\\))`)
         )
         if (variableType) {
-            // @ts-ignore // TODO: This should not be ignored
             const valueToReplace = variableType[0].includes("String")
                 ? `"${variable[1]}"`
                 : variable[1]
@@ -34,10 +39,10 @@ const moveVariablesIntoNormalisedQuery = (
 
 const removeQueryName = (queryWithVariablesMovedIn: string) => {
     let withoutQueryName = `${queryWithVariablesMovedIn}`
-    if (
-        !withoutQueryName.includes("query {") &&
-        !withoutQueryName.includes("mutation {")
-    ) {
+    const hasQueryName = ["query {", "mutation {"].every((queryTypeMarker) => {
+        return !withoutQueryName.includes(queryTypeMarker)
+    })
+    if (hasQueryName) {
         const queryName = withoutQueryName.match(/(?:query|mutation) (.+? ){/)
         if (queryName) {
             withoutQueryName = withoutQueryName.replace(queryName[1], "")
@@ -88,17 +93,18 @@ export const graphQlQueryToJson = (
         variables?: variablesObject
     } = {}
 ) => {
+    debugLog("-------------")
     const normalisedQuery = normaliseQuery(query)
-    console.warn({normalisedQuery})
+    debugLog({normalisedQuery})
     const variablesMovedIntoQuery = options.variables
         ? moveVariablesIntoNormalisedQuery(normalisedQuery, options.variables)
         : normalisedQuery
     const withoutQueryName = removeQueryName(variablesMovedIntoQuery)
-    console.warn({withoutQueryName})
+    debugLog({withoutQueryName})
     const argumentsAsArgs = placeMutationsArgumentsInsideArgsObject(
         withoutQueryName
     )
-    console.warn({argumentsAsArgs})
+    debugLog({argumentsAsArgs})
 
     const colonsBeforeCurlys = argumentsAsArgs.replace(
         /(?:[A-Z]+) {/gi,
@@ -106,7 +112,7 @@ export const graphQlQueryToJson = (
             return match.replace(" {", ": {")
         }
     )
-    console.warn({colonsBeforeCurlys})
+    debugLog({colonsBeforeCurlys})
 
     // TODO: Has to be improved
     // const markEnums = colonsBeforeCurlys.replace(/[A-Z]+: [A-Z]+/gi, (enumMatch) => {
@@ -117,10 +123,10 @@ export const graphQlQueryToJson = (
     //         return enumMatch
     //     }
     // })
-    // console.warn(markEnums)
+    // debugLog(markEnums)
 
     const withOuterCurlys = normaliseSpaces(`{ ${colonsBeforeCurlys} }`)
-    console.warn({withOuterCurlys})
+    debugLog({withOuterCurlys})
 
     const doubleQuoteVariableNames = withOuterCurlys.replace(
         /[A-Z_]+:/gi,
@@ -129,7 +135,7 @@ export const graphQlQueryToJson = (
         }
     )
 
-    console.warn({doubleQuoteVariableNames})
+    debugLog({doubleQuoteVariableNames})
 
     const orphanPropertiesMarkedTrue = doubleQuoteVariableNames.replace(
         /(?<!") [A-Z]+/gi,
@@ -138,18 +144,18 @@ export const graphQlQueryToJson = (
         }
     )
 
-    console.warn({orphanPropertiesMarkedTrue})
+    debugLog({orphanPropertiesMarkedTrue})
 
     const withoutDanglingCommas = removeDanglingCommas(
         orphanPropertiesMarkedTrue
     )
-    console.warn({withoutDanglingCommas})
+    debugLog({withoutDanglingCommas})
 
     const concatenateObjectsOnSameLevel = withoutDanglingCommas.replace(
         /} "/g,
         '}, "'
     )
-    console.warn({concatenateObjectsOnSameLevel})
+    debugLog({concatenateObjectsOnSameLevel})
 
     const concatenatePropertiesOnSameLevel = normaliseSpaces(
         concatenateObjectsOnSameLevel
