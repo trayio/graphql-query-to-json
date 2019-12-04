@@ -228,6 +228,39 @@ describe("Simple mutations", () => {
     })
 })
 
+describe("GraphQL aliases", () => {
+    it("Simple example with aliases", () => {
+        const query = `
+            query {
+                viewer {
+                    thingOne {
+                        name
+                        team
+                    }
+                    renamed: thingOne {
+                        propertyC
+                    }
+                }
+            }
+        `
+        const json = graphQlQueryToJson(query)
+        expect(json).toEqual({
+            query: {
+                viewer: {
+                    thingOne: {
+                        name: true,
+                        team: true,
+                    },
+                    renamed: {
+                        __aliasFor: "thingOne",
+                        propertyC: true,
+                    },
+                },
+            },
+        })
+    })
+})
+
 /* eslint-disable */
 const body = {
     operationName: "GetAuthenticationsPrivate",

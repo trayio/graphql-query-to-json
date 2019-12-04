@@ -6,7 +6,8 @@
     "scripts": {
         "build": "tsc",
         "watch": "npm run build -- --watch",
-        "test": "./node_modules/jest/bin/jest.js dist"
+        "test": "./node_modules/jest/bin/jest.js dist",
+        "debugTests": "__GQTOJSON_DEBUG=true npm test"
     },
     "author": "",
     "license": "ISC",

@@ -76,7 +76,9 @@ const placeMutationsArgumentsInsideArgsObject = (stringQuery: string) => {
         return replacement
     })
 
-    const removeImpossibleBracketCombinations = normaliseSpaces(argumentsAsArgs).replace(/} {/g, "} ")
+    const removeImpossibleBracketCombinations = normaliseSpaces(
+        argumentsAsArgs
+    ).replace(/} {/g, "} ")
 
     const normalised = normaliseSpaces(removeImpossibleBracketCombinations)
 
@@ -158,9 +160,27 @@ export const graphQlQueryToJson = (
     ).replace(/" "/g, '", "')
     debugLog({concatenatePropertiesOnSameLevel})
 
-    const concatenatePropertiesAfterObjectOnSameLevel = normaliseSpaces(concatenatePropertiesOnSameLevel).replace(/}"[A-Z]+"/gi, (match) => {
+    const concatenatePropertiesAfterObjectOnSameLevel = normaliseSpaces(
+        concatenatePropertiesOnSameLevel
+    ).replace(/}"[A-Z]+"/gi, (match) => {
         return match.replace('}"', '}, "')
     })
 
-    return JSON.parse(concatenatePropertiesAfterObjectOnSameLevel)
+    const wrapAliasesInAliasForObject = normaliseSpaces(
+        concatenatePropertiesAfterObjectOnSameLevel
+    ).replace(/"[A-Z]+": "[A-Z]+":.+/gi, (match) => {
+        let replacement = match
+        const aliasFor = match.match(/"[A-Z]+": "([A-Z]+)"/i)
+        const actualProp = aliasFor[1]
+        const alias = aliasFor.input.match(/"([A-Z]+)"/i)[1]
+        replacement = replacement.replace(new RegExp(`"${actualProp}": `), "")
+        replacement = replacement.replace(
+            `"${alias}": {`,
+            `"${alias}": { "__aliasFor": "${actualProp}", `
+        )
+        return replacement
+    })
+    debugLog({wrapAliasesInAliasForObject})
+
+    return JSON.parse(wrapAliasesInAliasForObject)
 }
