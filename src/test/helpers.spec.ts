@@ -1,4 +1,4 @@
-import { debugLog } from "../../dist"
+import { debugLog } from "../index"
 
 describe("Helpers", () => {
     describe("Debug logging", () => {
