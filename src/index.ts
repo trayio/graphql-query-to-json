@@ -1,19 +1,8 @@
-import {EnumType} from "json-to-graphql-query"
-import * as mapValues from "lodash.mapvalues"
-import * as isString from "lodash.isstring"
-import * as isObject from "lodash.isobject"
+import {debugLog, replaceEnumsInObject} from "./utils"
+import {enumTypeDropin} from "./constants"
 
 type variablesObject = {
     [variableName: string]: any
-}
-
-const enumTypeDropin = "___ENUM_TYPE"
-
-export const debugLog = (...args: any) => {
-    if (process.env.__GQTOJSON_DEBUG === "true") {
-        // eslint-disable-next-line no-console
-        console.log(...args)
-    }
 }
 
 const moveVariablesIntoNormalisedQuery = (
@@ -92,25 +81,12 @@ const placeMutationsArgumentsInsideArgsObject = (stringQuery: string) => {
     return normalised
 }
 
-const replaceEnumsInObject = (obj) => {
-    return mapValues(obj, (value) => {
-        if (isString(value) && new RegExp(`${enumTypeDropin}$`).test(value)) {
-            const enumValue = value.replace(enumTypeDropin, "")
-            return new EnumType(enumValue)
-        } else if (isObject(value)) {
-            return replaceEnumsInObject(value)
-        } else {
-            return value
-        }
-    })
-}
-
-export const graphQlQueryToJson = (
+const transformGraphqlQueryToJsonString = (
     query: string,
     options: {
         variables?: variablesObject
     } = {}
-) => {
+): string => {
     debugLog("-------------")
     const normalisedQuery = normaliseQuery(query)
     debugLog({normalisedQuery})
@@ -203,6 +179,26 @@ export const graphQlQueryToJson = (
     })
     debugLog({wrapAliasesInAliasForObject})
 
-    const parsedObject = JSON.parse(wrapAliasesInAliasForObject)
-    return replaceEnumsInObject(parsedObject)
+    return wrapAliasesInAliasForObject
+}
+
+const throwParsingError = () => {
+    throw new Error(
+        `We were unable to parse your graphQL query into a JSON object. Are you sure that it has been valid JSON?`
+    )
+}
+
+export const graphQlQueryToJson = (
+    query: string,
+    options: {
+        variables?: variablesObject
+    } = {}
+) => {
+    const jsonedQuery = transformGraphqlQueryToJsonString(query, options)
+    try {
+        const parsedObject = JSON.parse(jsonedQuery)
+        return replaceEnumsInObject(parsedObject)
+    } catch (error) {
+        throwParsingError()
+    }
 }

@@ -355,3 +355,9 @@ describe("Complex examples", () => {
         expect(result).toEqual(expectedQueryOutput)
     })
 })
+
+describe("Errors", () => {
+    it("Throws error if given invalid graphQL schema", () => {
+        expect(() => graphQlQueryToJson(`query { asdf sd`)).toThrow()
+    })
+})
