@@ -112,36 +112,39 @@ export const graphQlQueryToJson = (
     )
     debugLog({colonsBeforeCurlys})
 
-    // TODO: Has to be improved
-    // const markEnums = colonsBeforeCurlys.replace(/[A-Z]+: [A-Z]+/gi, (enumMatch) => {
-    //     const enumValue = enumMatch.match(/: (.+)/)
-    //     if (enumValue) {
-    //         return enumMatch.replace(enumValue[1], `new EnumType("${enumValue[1]}")`)
-    //     } else {
-    //         return enumMatch
-    //     }
-    // })
-    // debugLog(markEnums)
-
     const withOuterCurlys = normaliseSpaces(`{ ${colonsBeforeCurlys} }`)
     debugLog({withOuterCurlys})
 
-    const doubleQuoteVariableNames = withOuterCurlys.replace(
+    const markEnums = normaliseSpaces(withOuterCurlys).replace(
+        /[A-Z_]+: [A-Z_]+}/gi,
+        (propAndEnumValue) => {
+            debugLog({propAndEnumValue})
+            const enumMarkedWithSuffix = propAndEnumValue.replace(
+                /: [A-Z]+/i,
+                (colonAndEnumValue) => {
+                    debugLog({colonAndEnumValue})
+                    const withoutColon = colonAndEnumValue.replace(/: /, "")
+                    return `: "${withoutColon}___ENUM_TYPE" `
+                }
+            )
+            return enumMarkedWithSuffix
+        }
+    )
+    debugLog({markEnums})
+
+    const doubleQuoteVariableNames = normaliseSpaces(markEnums).replace(
         /[A-Z_]+:/gi,
         (varName) => {
             return `"${varName.replace(":", '":')}`
         }
     )
-
     debugLog({doubleQuoteVariableNames})
 
-    const orphanPropertiesMarkedTrue = doubleQuoteVariableNames.replace(
-        /(?<!") [A-Z_]+/gi,
-        (orphan) => {
-            return `"${orphan.trim()}": true, `
-        }
-    )
-
+    const orphanPropertiesMarkedTrue = normaliseSpaces(
+        doubleQuoteVariableNames
+    ).replace(/(?<!") [A-Z_]+/gi, (orphan) => {
+        return `"${orphan.trim()}": true, `
+    })
     debugLog({orphanPropertiesMarkedTrue})
 
     const withoutDanglingCommas = removeDanglingCommas(

@@ -261,6 +261,32 @@ describe("Aliases", () => {
     })
 })
 
+describe("Enum Types", () => {
+    it("Simple enum type", () => {
+        const query = `
+            query {
+                viewer {
+                    stuffWithArguments(argumentOne: ALL) {
+                        personalEnumData
+                    }
+                }
+            }
+        `
+        expect(graphQlQueryToJson(query)).toEqual({
+            query: {
+                viewer: {
+                    stuffWithArguments: {
+                        __args: {
+                            argumentOne: "ALL___ENUM_TYPE",
+                        },
+                        personalEnumData: true,
+                    },
+                },
+            },
+        })
+    })
+})
+
 /* eslint-disable */
 const body = {
     operationName: "GetAuthenticationsPrivate",
