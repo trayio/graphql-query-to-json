@@ -118,11 +118,9 @@ export const graphQlQueryToJson = (
     const markEnums = normaliseSpaces(withOuterCurlys).replace(
         /[A-Z_]+: [A-Z_]+}/gi,
         (propAndEnumValue) => {
-            debugLog({propAndEnumValue})
             const enumMarkedWithSuffix = propAndEnumValue.replace(
                 /: [A-Z]+/i,
                 (colonAndEnumValue) => {
-                    debugLog({colonAndEnumValue})
                     const withoutColon = colonAndEnumValue.replace(/: /, "")
                     return `: "${withoutColon}___ENUM_TYPE" `
                 }
