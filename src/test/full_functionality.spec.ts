@@ -1,4 +1,5 @@
 import {graphQlQueryToJson} from "../index"
+import {EnumType} from "json-to-graphql-query"
 
 describe("Simple queries", () => {
     it("Single property", () => {
@@ -277,7 +278,7 @@ describe("Enum Types", () => {
                 viewer: {
                     stuffWithArguments: {
                         __args: {
-                            argumentOne: "ALL___ENUM_TYPE",
+                            argumentOne: new EnumType("ALL"),
                         },
                         personalEnumData: true,
                     },
@@ -297,7 +298,7 @@ describe("Complex examples", () => {
             __args: {
                 criteria: {
                     name: "",
-                    ownershipQueryType: "ALL___ENUM_TYPE",
+                    ownershipQueryType: new EnumType("ALL"),
                 },
             },
             edges: {
@@ -330,7 +331,7 @@ describe("Complex examples", () => {
             __aliasFor: "userAuthentications",
             __args: {
                 criteria: {
-                    ownershipQueryType: "ALL___ENUM_TYPE",
+                    ownershipQueryType: new EnumType("ALL"),
                 },
             },
             edges: {

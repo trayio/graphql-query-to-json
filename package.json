@@ -24,5 +24,11 @@
         "lint-staged": "^9.5.0",
         "prettier": "^1.19.1",
         "typescript": "^3.7.2"
+    },
+    "dependencies": {
+        "json-to-graphql-query": "^1.9.0",
+        "lodash.isobject": "^3.0.2",
+        "lodash.isstring": "^4.0.1",
+        "lodash.mapvalues": "^4.6.0"
     }
 }
