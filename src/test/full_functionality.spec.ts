@@ -287,6 +287,74 @@ describe("Enum Types", () => {
     })
 })
 
+describe("Complex examples", () => {
+    it("Query using name, variables, enums and aliases", () => {
+        const variables = {ownership: "ALL", name: ""}
+        const query =
+            "query GetAuthenticationsPrivate($name: String, $ownership: OwnershipQueryType!) {\n  viewer {\n    userAuthentications(criteria: {name: $name, ownershipQueryType: $ownership}) {\n      edges {\n        node {\n          id\n          name\n          created\n          creator {\n            name\n            id\n            __typename\n          }\n          service {\n            icon\n            __typename\n          }\n          owner {\n            ownerType\n            __typename\n          }\n          customFields\n          scopes\n          __typename\n        }\n        __typename\n      }\n      __typename\n    }\n    count: userAuthentications(criteria: {ownershipQueryType: ALL}) {\n      edges {\n        node {\n          id\n          __typename\n        }\n        __typename\n      }\n      __typename\n    }\n    __typename\n  }\n}\n"
+        const result = graphQlQueryToJson(query, {variables})
+        const userAuthenticationsQuery = {
+            __args: {
+                criteria: {
+                    name: "",
+                    ownershipQueryType: "ALL___ENUM_TYPE",
+                },
+            },
+            edges: {
+                node: {
+                    id: true,
+                    name: true,
+                    created: true,
+                    creator: {
+                        name: true,
+                        id: true,
+                        __typename: true,
+                    },
+                    service: {
+                        icon: true,
+                        __typename: true,
+                    },
+                    owner: {
+                        ownerType: true,
+                        __typename: true,
+                    },
+                    customFields: true,
+                    scopes: true,
+                    __typename: true,
+                },
+                __typename: true,
+            },
+            __typename: true,
+        }
+        const countQuery = {
+            __aliasFor: "userAuthentications",
+            __args: {
+                criteria: {
+                    ownershipQueryType: "ALL___ENUM_TYPE",
+                },
+            },
+            edges: {
+                node: {
+                    id: true,
+                    __typename: true,
+                },
+                __typename: true,
+            },
+            __typename: true,
+        }
+        const expectedQueryOutput = {
+            query: {
+                viewer: {
+                    __typename: true,
+                    userAuthentications: userAuthenticationsQuery,
+                    count: countQuery,
+                },
+            },
+        }
+        expect(result).toEqual(expectedQueryOutput)
+    })
+})
+
 /* eslint-disable */
 const body = {
     operationName: "GetAuthenticationsPrivate",
