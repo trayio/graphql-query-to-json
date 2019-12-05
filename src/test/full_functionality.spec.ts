@@ -1,7 +1,7 @@
 import {graphQlQueryToJson} from "../index"
 import {EnumType} from "json-to-graphql-query"
 
-describe("Simple queries", () => {
+describe("Queries", () => {
     it("Single property", () => {
         const query = `
             query {
@@ -162,7 +162,7 @@ describe("Simple queries", () => {
     })
 })
 
-describe("Simple mutations", () => {
+describe("Mutations", () => {
     it("Simple mutation using string argument with sibling queries", () => {
         const mutation = `
         mutation {
