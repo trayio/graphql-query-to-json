@@ -1,5 +1,33 @@
 import {parse} from "graphql"
 
+interface SelectionSet {
+    kind: string
+    selections: {
+        kind: string
+        name: {
+            kind: string
+            value: string
+        }
+        arguments: {
+            kind: string
+            name: {
+                kind: string
+                value: string
+            }
+            value: {
+                kind: string
+                value: string
+                block: boolean
+            }
+        }[]
+    }[]
+}
+
+interface ActualDefinitionNode {
+    operation: string
+    selectionSet: SelectionSet
+}
+
 const getArguments = (args, argsObj = {}) => {
     args.forEach((arg) => {
         if (arg.selectionSet) {
@@ -33,17 +61,24 @@ const getSelections = (selections, selObj = {}) => {
     return selObj
 }
 
-export const graphQlQueryToJson = (query: string) => {
+export const graphQlQueryToJson = (
+    query: string,
+    options: {
+        variables?: variablesObject
+    } = {}
+) => {
     const jsonObject = {}
     const parsedQuery = parse(query)
     // console.log(JSON.stringify(parsedQuery, undefined, 4))
     if (parsedQuery.definitions.length > 1) {
         throw new Error(`The parsed query has more than one set of definitions`)
     }
-    const operation = parsedQuery.definitions[0].operation
+    // @ts-ignore
+    const firstDefinition = parsedQuery.definitions[0] as ActualDefinitionNode
+    const operation = firstDefinition.operation
 
     const selections = getSelections(
-        parsedQuery.definitions[0].selectionSet.selections,
+        firstDefinition.selectionSet.selections,
         {}
     )
 
