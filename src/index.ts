@@ -1,31 +1,36 @@
 import {parse} from "graphql"
-import { EnumType } from "json-to-graphql-query"
+import {EnumType} from "json-to-graphql-query"
 
 type variablesObject = {
     [variableName: string]: string
 }
 
+interface Argument {
+    kind: string
+    name: {
+        kind: string
+        value: string
+    }
+    value: {
+        kind: string
+        value: string
+        block: boolean
+    }
+}
+
+interface Selection {
+    kind: string
+    name: {
+        kind: string
+        value: string
+    }
+    arguments?: Argument[]
+    selectionSet?: SelectionSet
+}
+
 interface SelectionSet {
     kind: string
-    selections: {
-        kind: string
-        name: {
-            kind: string
-            value: string
-        }
-        arguments: {
-            kind: string
-            name: {
-                kind: string
-                value: string
-            }
-            value: {
-                kind: string
-                value: string
-                block: boolean
-            }
-        }[]
-    }[]
+    selections: Selection[]
 }
 
 interface ActualDefinitionNode {
@@ -49,7 +54,7 @@ const getArguments = (args, argsObj = {}) => {
     return argsObj
 }
 
-const getSelections = (selections, selObj = {}) => {
+const getSelections = (selections: Selection[], selObj = {}) => {
     selections.forEach((selection) => {
         if (selection.selectionSet) {
             // console.warn({gettingSelection: JSON.stringify(selection.selectionSet, undefined, 4)})
@@ -69,6 +74,8 @@ const getSelections = (selections, selObj = {}) => {
     return selObj
 }
 
+const getVariables = (defintion: ActualDefinitionNode) => {}
+
 export const graphQlQueryToJson = (
     query: string,
     options: {
@@ -85,6 +92,7 @@ export const graphQlQueryToJson = (
     const firstDefinition = parsedQuery.definitions[0] as ActualDefinitionNode
     const operation = firstDefinition.operation
 
+    const variablesUsedInQuery = getVariables(firstDefinition)
     const selections = getSelections(
         firstDefinition.selectionSet.selections,
         {}

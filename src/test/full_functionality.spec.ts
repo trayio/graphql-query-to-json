@@ -129,9 +129,9 @@ describe("Queries", () => {
         })
     })
 
-    it.skip("Simple query using variables", () => {
+    it("Simple query using variables", () => {
         const query = `
-        query GetThisShit($name: String, $lastName: String) {
+        query GetThisStuff($name: String, $lastName: String) {
             viewer {
                 personal(criteria: {
                     name: $name,
