@@ -1,4 +1,9 @@
 import {parse} from "graphql"
+import { EnumType } from "json-to-graphql-query"
+
+type variablesObject = {
+    [variableName: string]: string
+}
 
 interface SelectionSet {
     kind: string
@@ -35,6 +40,8 @@ const getArguments = (args, argsObj = {}) => {
                 arg.selectionSet.selections,
                 argsObj
             )
+        } else if (arg.value.kind === "EnumValue") {
+            argsObj[arg.name.value] = new EnumType(arg.value.value)
         } else {
             argsObj[arg.name.value] = arg.value.value
         }
@@ -45,6 +52,7 @@ const getArguments = (args, argsObj = {}) => {
 const getSelections = (selections, selObj = {}) => {
     selections.forEach((selection) => {
         if (selection.selectionSet) {
+            // console.warn({gettingSelection: JSON.stringify(selection.selectionSet, undefined, 4)})
             selObj[selection.name.value] = getSelections(
                 selection.selectionSet.selections
             )
@@ -69,7 +77,7 @@ export const graphQlQueryToJson = (
 ) => {
     const jsonObject = {}
     const parsedQuery = parse(query)
-    // console.log(JSON.stringify(parsedQuery, undefined, 4))
+    console.log(JSON.stringify(parsedQuery, undefined, 4))
     if (parsedQuery.definitions.length > 1) {
         throw new Error(`The parsed query has more than one set of definitions`)
     }
