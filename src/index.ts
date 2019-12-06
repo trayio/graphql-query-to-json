@@ -33,9 +33,28 @@ interface SelectionSet {
     selections: Selection[]
 }
 
+interface VariableDefinition {
+    kind: string
+    variable: {
+        kind: string
+        name: {
+            kind: string
+            value: string
+        }
+    }
+    type: {
+        kind: string
+        name: {
+            kind: string
+            value: string
+        }
+    }
+}
+
 interface ActualDefinitionNode {
     operation: string
     selectionSet: SelectionSet
+    variableDefinitions?: VariableDefinition[]
 }
 
 const getArguments = (args, argsObj = {}) => {
@@ -74,7 +93,25 @@ const getSelections = (selections: Selection[], selObj = {}) => {
     return selObj
 }
 
-const getVariables = (defintion: ActualDefinitionNode) => {}
+interface Variable {
+    key: string
+    type: string
+    value: any
+}
+
+const getVariables = (defintion: ActualDefinitionNode): Variable[] => {
+    if (!defintion.variableDefinitions.length) {
+        return []
+    } else {
+        return defintion.variableDefinitions.reduce((prev, curr) => {
+            return [...prev, {
+                key: curr.variable.name.value,
+                type: curr.type.name.value,
+                value: "Dummy_Value"
+            }]
+        }, [])
+    }
+}
 
 export const graphQlQueryToJson = (
     query: string,
@@ -92,7 +129,7 @@ export const graphQlQueryToJson = (
     const firstDefinition = parsedQuery.definitions[0] as ActualDefinitionNode
     const operation = firstDefinition.operation
 
-    const variablesUsedInQuery = getVariables(firstDefinition)
+    // const variablesUsedInQuery = getVariables(firstDefinition)
     const selections = getSelections(
         firstDefinition.selectionSet.selections,
         {}

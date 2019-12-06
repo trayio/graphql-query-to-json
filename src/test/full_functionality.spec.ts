@@ -129,7 +129,7 @@ describe("Queries", () => {
         })
     })
 
-    it("Simple query using variables", () => {
+    it.only("Simple query using variables", () => {
         const query = `
         query GetThisStuff($name: String, $lastName: String) {
             viewer {
