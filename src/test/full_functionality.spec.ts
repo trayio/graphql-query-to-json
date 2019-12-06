@@ -16,12 +16,12 @@ describe("Queries", () => {
         expect(graphQlQueryToJson(query)).toEqual({
             query: {
                 viewer: {
-                    theOnlyPropertyIWant: true,
+                    theOnlyPropertyIWant: true
                 },
                 other: {
-                    anotherOne: true,
-                },
-            },
+                    anotherOne: true
+                }
+            }
         })
     })
 
@@ -38,9 +38,9 @@ describe("Queries", () => {
             query: {
                 viewer: {
                     propertyOne: true,
-                    propertyTwo: true,
-                },
-            },
+                    propertyTwo: true
+                }
+            }
         })
     })
 
@@ -57,9 +57,9 @@ describe("Queries", () => {
             query: {
                 viewer: {
                     propertyOne: true,
-                    propertyTwo: true,
-                },
-            },
+                    propertyTwo: true
+                }
+            }
         })
     })
 
@@ -83,16 +83,16 @@ describe("Queries", () => {
             query: {
                 viewer: {
                     propertyOne: true,
-                    propertyTwo: true,
+                    propertyTwo: true
                 },
                 nested: {
                     evenDeeper: {
                         nestedOne: true,
                         nestedTwo: true,
-                        nestedThree: true,
-                    },
-                },
-            },
+                        nestedThree: true
+                    }
+                }
+            }
         })
     })
 
@@ -116,20 +116,20 @@ describe("Queries", () => {
             query: {
                 viewer: {
                     propertyOne: true,
-                    propertyTwo: true,
+                    propertyTwo: true
                 },
                 nested: {
                     evenDeeper: {
                         nestedOne: true,
                         nestedTwo: true,
-                        nestedThree: true,
-                    },
-                },
-            },
+                        nestedThree: true
+                    }
+                }
+            }
         })
     })
 
-    it.only("Simple query using variables", () => {
+    it("Simple query using variables", () => {
         const query = `
         query GetThisStuff($name: String, $lastName: String) {
             viewer {
@@ -146,8 +146,8 @@ describe("Queries", () => {
         const result = graphQlQueryToJson(query, {
             variables: {
                 name: "PETER",
-                lastName: "SCHMIDT",
-            },
+                lastName: "SCHMIDT"
+            }
         })
         expect(result).toEqual({
             query: {
@@ -156,14 +156,14 @@ describe("Queries", () => {
                         __args: {
                             criteria: {
                                 name: "PETER",
-                                lastName: "SCHMIDT",
-                            },
+                                lastName: "SCHMIDT"
+                            }
                         },
                         name: true,
-                        address: true,
-                    },
-                },
-            },
+                        address: true
+                    }
+                }
+            }
         })
     })
 })
@@ -187,17 +187,17 @@ describe("Mutations", () => {
             mutation: {
                 getPersonalStuff: {
                     __args: {
-                        name: "PETER",
+                        name: "PETER"
                     },
                     personal: {
                         name: true,
-                        address: true,
+                        address: true
                     },
                     other: {
-                        parents: true,
-                    },
-                },
-            },
+                        parents: true
+                    }
+                }
+            }
         })
     })
 
@@ -220,17 +220,55 @@ describe("Mutations", () => {
                 getPersonalStuff: {
                     __args: {
                         name: "AMADEUS",
-                        lastName: "MOZART",
+                        lastName: "MOZART"
                     },
                     personal: {
                         name: true,
-                        address: true,
+                        address: true
                     },
                     other: {
-                        parents: true,
+                        parents: true
+                    }
+                }
+            }
+        })
+    })
+
+    it("Arguments wrapped in object", () => {
+        const mutation = `
+        mutation {
+            getPersonalStuff(input: {
+                name: "HANNES",
+                lastName: "RUDOLF"
+            }) {
+                personal {
+                    name
+                    address
+                }
+                other {
+                    parents
+                }
+            }
+        }
+        `
+        expect(graphQlQueryToJson(mutation)).toEqual({
+            mutation: {
+                getPersonalStuff: {
+                    __args: {
+                        input: {
+                            name: "PETER",
+                            lastName: "RUDOLF"
+                        }
                     },
-                },
-            },
+                    personal: {
+                        name: true,
+                        address: true
+                    },
+                    other: {
+                        parents: true
+                    }
+                }
+            }
         })
     })
 })
@@ -256,14 +294,14 @@ describe("Aliases", () => {
                 viewer: {
                     thingOne: {
                         name: true,
-                        team: true,
+                        team: true
                     },
                     renamed: {
                         __aliasFor: "thingOne",
-                        propertyC: true,
-                    },
-                },
-            },
+                        propertyC: true
+                    }
+                }
+            }
         })
     })
 })
@@ -284,12 +322,12 @@ describe("Enum Types", () => {
                 viewer: {
                     stuffWithArguments: {
                         __args: {
-                            argumentOne: new EnumType("ALL"),
+                            argumentOne: new EnumType("ALL")
                         },
-                        personalEnumData: true,
-                    },
-                },
-            },
+                        personalEnumData: true
+                    }
+                }
+            }
         })
     })
 })
@@ -304,8 +342,8 @@ describe("Complex examples", () => {
             __args: {
                 criteria: {
                     name: "",
-                    ownershipQueryType: new EnumType("ALL"),
-                },
+                    ownershipQueryType: new EnumType("ALL")
+                }
             },
             edges: {
                 node: {
@@ -315,48 +353,48 @@ describe("Complex examples", () => {
                     creator: {
                         name: true,
                         id: true,
-                        __typename: true,
+                        __typename: true
                     },
                     service: {
                         icon: true,
-                        __typename: true,
+                        __typename: true
                     },
                     owner: {
                         ownerType: true,
-                        __typename: true,
+                        __typename: true
                     },
                     customFields: true,
                     scopes: true,
-                    __typename: true,
+                    __typename: true
                 },
-                __typename: true,
+                __typename: true
             },
-            __typename: true,
+            __typename: true
         }
         const countQuery = {
             __aliasFor: "userAuthentications",
             __args: {
                 criteria: {
-                    ownershipQueryType: new EnumType("ALL"),
-                },
+                    ownershipQueryType: new EnumType("ALL")
+                }
             },
             edges: {
                 node: {
                     id: true,
-                    __typename: true,
+                    __typename: true
                 },
-                __typename: true,
+                __typename: true
             },
-            __typename: true,
+            __typename: true
         }
         const expectedQueryOutput = {
             query: {
                 viewer: {
                     __typename: true,
                     userAuthentications: userAuthenticationsQuery,
-                    count: countQuery,
-                },
-            },
+                    count: countQuery
+                }
+            }
         }
         expect(result).toEqual(expectedQueryOutput)
     })

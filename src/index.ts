@@ -57,12 +57,12 @@ interface ActualDefinitionNode {
     variableDefinitions?: VariableDefinition[]
 }
 
-const getArguments = (args, argsObj = {}) => {
+const getArguments = (args) => {
+    const argsObj = {}
     args.forEach((arg) => {
         if (arg.selectionSet) {
             argsObj[arg.name.value] = getSelections(
-                arg.selectionSet.selections,
-                argsObj
+                arg.selectionSet.selections
             )
         } else if (arg.value.kind === "EnumValue") {
             argsObj[arg.name.value] = new EnumType(arg.value.value)
@@ -73,7 +73,8 @@ const getArguments = (args, argsObj = {}) => {
     return argsObj
 }
 
-const getSelections = (selections: Selection[], selObj = {}) => {
+const getSelections = (selections: Selection[]) => {
+    const selObj = {}
     selections.forEach((selection) => {
         if (selection.selectionSet) {
             // console.warn({gettingSelection: JSON.stringify(selection.selectionSet, undefined, 4)})
@@ -104,11 +105,14 @@ const getVariables = (defintion: ActualDefinitionNode): Variable[] => {
         return []
     } else {
         return defintion.variableDefinitions.reduce((prev, curr) => {
-            return [...prev, {
-                key: curr.variable.name.value,
-                type: curr.type.name.value,
-                value: "Dummy_Value"
-            }]
+            return [
+                ...prev,
+                {
+                    key: curr.variable.name.value,
+                    type: curr.type.name.value,
+                    value: "Dummy_Value"
+                }
+            ]
         }, [])
     }
 }
