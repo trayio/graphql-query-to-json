@@ -2,7 +2,7 @@ import {graphQlQueryToJson} from "../index"
 import {EnumType} from "json-to-graphql-query"
 
 describe("Queries", () => {
-    it("Single property", () => {
+    it.only("Single property", () => {
         const query = `
             query {
                 viewer {
@@ -25,7 +25,7 @@ describe("Queries", () => {
         })
     })
 
-    it("Two properties", () => {
+    it.only("Two properties", () => {
         const query = `
             query {
                 viewer {
@@ -129,7 +129,7 @@ describe("Queries", () => {
         })
     })
 
-    it("Simple query using variables", () => {
+    it.skip("Simple query using variables", () => {
         const query = `
         query GetThisShit($name: String, $lastName: String) {
             viewer {
@@ -169,7 +169,7 @@ describe("Queries", () => {
 })
 
 describe("Mutations", () => {
-    it("Simple mutation using string argument with sibling queries", () => {
+    it.only("Simple mutation using string argument with sibling queries", () => {
         const mutation = `
         mutation {
             getPersonalStuff(name: "PETER") {
