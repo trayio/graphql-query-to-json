@@ -57,19 +57,29 @@ interface ActualDefinitionNode {
     variableDefinitions?: VariableDefinition[]
 }
 
+const getArgumentObject = (argumentFields: Argument[]) => {
+    const argObj = {}
+    argumentFields.forEach((arg) => {
+        argObj[arg.name.value] = arg.value.value
+    })
+    return argObj
+}
+
 const getArguments = (args) => {
     const argsObj = {}
     args.forEach((arg) => {
-        if (arg.selectionSet) {
-            argsObj[arg.name.value] = getSelections(
-                arg.selectionSet.selections
-            )
+        console.warn({arg})
+        if (arg.value.kind === "ObjectValue") {
+            argsObj[arg.name.value] = getArgumentObject(arg.value.fields)
+        } else if (arg.selectionSet) {
+            argsObj[arg.name.value] = getSelections(arg.selectionSet.selections)
         } else if (arg.value.kind === "EnumValue") {
             argsObj[arg.name.value] = new EnumType(arg.value.value)
         } else {
             argsObj[arg.name.value] = arg.value.value
         }
     })
+    console.warn({argsObj})
     return argsObj
 }
 
@@ -135,8 +145,7 @@ export const graphQlQueryToJson = (
 
     // const variablesUsedInQuery = getVariables(firstDefinition)
     const selections = getSelections(
-        firstDefinition.selectionSet.selections,
-        {}
+        firstDefinition.selectionSet.selections
     )
 
     jsonObject[operation] = selections

@@ -256,7 +256,7 @@ describe("Mutations", () => {
                 getPersonalStuff: {
                     __args: {
                         input: {
-                            name: "PETER",
+                            name: "HANNES",
                             lastName: "RUDOLF"
                         }
                     },
