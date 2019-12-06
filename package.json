@@ -26,6 +26,7 @@
         "typescript": "^3.7.2"
     },
     "dependencies": {
+        "graphql": "^14.5.8",
         "json-to-graphql-query": "^1.9.0",
         "lodash.isobject": "^3.0.2",
         "lodash.isstring": "^4.0.1",

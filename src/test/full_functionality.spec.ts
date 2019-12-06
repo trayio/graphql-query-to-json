@@ -8,12 +8,18 @@ describe("Queries", () => {
                 viewer {
                     theOnlyPropertyIWant
                 }
+                other {
+                    anotherOne
+                }
             }
         `
         expect(graphQlQueryToJson(query)).toEqual({
             query: {
                 viewer: {
                     theOnlyPropertyIWant: true,
+                },
+                other: {
+                    anotherOne: true,
                 },
             },
         })
