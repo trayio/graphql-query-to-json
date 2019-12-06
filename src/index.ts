@@ -5,12 +5,13 @@ type variablesObject = {
 }
 
 const getArguments = (args, argsObj = {}) => {
-    console.warn("AM I in GET ARGUMENTS?\n\n", args)
     args.forEach((arg) => {
         if (arg.selectionSet) {
-            argsObj[arg.name.value] = getSelections(arg.selectionSet.selections, argsObj)
-        }
-        else {
+            argsObj[arg.name.value] = getSelections(
+                arg.selectionSet.selections,
+                argsObj
+            )
+        } else {
             argsObj[arg.name.value] = arg.value.value
         }
     })
@@ -25,9 +26,11 @@ const getSelections = (selections, selObj = {}) => {
             )
         }
         if (selection.arguments.length > 0) {
-            selObj[selection.name.value].__args = getArguments(selection.arguments)
+            selObj[selection.name.value].__args = getArguments(
+                selection.arguments
+            )
         }
-        if (!selection.selectionSet && ! selection.arguments.length) {
+        if (!selection.selectionSet && !selection.arguments.length) {
             selObj[selection.name.value] = true
         }
     })
@@ -42,7 +45,7 @@ const transformGraphqlQueryToJsonString = (
 ): any => {
     const jsonObject = {}
     const parsedQuery = parse(query)
-    console.log(JSON.stringify(parsedQuery, undefined, 4))
+    // console.log(JSON.stringify(parsedQuery, undefined, 4))
     if (parsedQuery.definitions.length > 1) {
         throw new Error(`The parsed query has more than one set of definitions`)
     }
@@ -52,10 +55,8 @@ const transformGraphqlQueryToJsonString = (
         parsedQuery.definitions[0].selectionSet.selections,
         {}
     )
-    console.log({selections})
 
     jsonObject[operation] = selections
-    console.log((JSON.stringify(jsonObject, undefined, 4)))
     return jsonObject
 }
 
