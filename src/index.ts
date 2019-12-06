@@ -1,9 +1,5 @@
 import {parse} from "graphql"
 
-type variablesObject = {
-    [variableName: string]: any
-}
-
 const getArguments = (args, argsObj = {}) => {
     args.forEach((arg) => {
         if (arg.selectionSet) {
@@ -37,12 +33,7 @@ const getSelections = (selections, selObj = {}) => {
     return selObj
 }
 
-const transformGraphqlQueryToJsonString = (
-    query: string,
-    options: {
-        variables?: variablesObject
-    } = {}
-): any => {
+export const graphQlQueryToJson = (query: string) => {
     const jsonObject = {}
     const parsedQuery = parse(query)
     // console.log(JSON.stringify(parsedQuery, undefined, 4))
@@ -58,24 +49,4 @@ const transformGraphqlQueryToJsonString = (
 
     jsonObject[operation] = selections
     return jsonObject
-}
-
-const throwParsingError = () => {
-    throw new Error(
-        `We were unable to parse your graphQL query into a JSON object. Are you sure that it has been valid JSON?`
-    )
-}
-
-export const graphQlQueryToJson = (
-    query: string,
-    options: {
-        variables?: variablesObject
-    } = {}
-) => {
-    // try {
-    const jsonedQuery = transformGraphqlQueryToJsonString(query)
-    return jsonedQuery
-    // } catch (error) {
-    //     throwParsingError()
-    // }
 }
