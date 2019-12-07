@@ -15,11 +15,16 @@ interface Argument {
         kind: string
         value: string
         block: boolean
+        fields?: Argument[]
     }
 }
 
 interface Selection {
     kind: string
+    alias: {
+        kind: string
+        value: string
+    }
     name: {
         kind: string
         value: string
@@ -60,7 +65,11 @@ interface ActualDefinitionNode {
 const getArgumentObject = (argumentFields: Argument[]) => {
     const argObj = {}
     argumentFields.forEach((arg) => {
-        argObj[arg.name.value] = arg.value.value
+        if (arg.value.kind === "ObjectValue") {
+            argObj[arg.name.value] = getArgumentObject(arg.value.fields)
+        } else {
+            argObj[arg.name.value] = arg.value.value
+        }
     })
     return argObj
 }
@@ -86,6 +95,14 @@ const getArguments = (args) => {
 const getSelections = (selections: Selection[]) => {
     const selObj = {}
     selections.forEach((selection) => {
+        if (selection.alias) {
+            selObj[selection.name.value] = {
+                __aliasFor: selection.alias.value,
+                ...getSelections(
+                    selection.selectionSet.selections
+                )
+            }
+        }
         if (selection.selectionSet) {
             // console.warn({gettingSelection: JSON.stringify(selection.selectionSet, undefined, 4)})
             selObj[selection.name.value] = getSelections(
@@ -135,7 +152,7 @@ export const graphQlQueryToJson = (
 ) => {
     const jsonObject = {}
     const parsedQuery = parse(query)
-    console.log(JSON.stringify(parsedQuery, undefined, 4))
+    // console.log(JSON.stringify(parsedQuery, undefined, 4))
     if (parsedQuery.definitions.length > 1) {
         throw new Error(`The parsed query has more than one set of definitions`)
     }
@@ -149,5 +166,6 @@ export const graphQlQueryToJson = (
     )
 
     jsonObject[operation] = selections
+    // console.log(JSON.stringify(jsonObject, undefined, 4))
     return jsonObject
 }

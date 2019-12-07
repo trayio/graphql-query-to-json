@@ -271,6 +271,52 @@ describe("Mutations", () => {
             }
         })
     })
+
+    it("Arguments wrapped in nested object", () => {
+        const mutation = `
+        mutation {
+            getPersonalStuff(input: {
+                name: "HANNES",
+                lastName: "RUDOLF",
+                city: {
+                    name: "Hollywood",
+                    country: "California, USA"
+                }
+            }) {
+                personal {
+                    name
+                    address
+                }
+                other {
+                    parents
+                }
+            }
+        }
+        `
+        expect(graphQlQueryToJson(mutation)).toEqual({
+            mutation: {
+                getPersonalStuff: {
+                    __args: {
+                        input: {
+                            name: "HANNES",
+                            lastName: "RUDOLF",
+                            city: {
+                                name: "Hollywood",
+                                country: "California, USA"
+                            }
+                        }
+                    },
+                    personal: {
+                        name: true,
+                        address: true
+                    },
+                    other: {
+                        parents: true
+                    }
+                }
+            }
+        })
+    })
 })
 
 describe("Aliases", () => {
