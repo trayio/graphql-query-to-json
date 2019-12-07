@@ -62,6 +62,8 @@ interface ActualDefinitionNode {
     variableDefinitions?: VariableDefinition[]
 }
 
+const undefinedVariableConst = "undefined_variable"
+
 const getArgumentObject = (argumentFields: Argument[]) => {
     const argObj = {}
     argumentFields.forEach((arg) => {
@@ -123,28 +125,46 @@ interface Variable {
     value: any
 }
 
-const getVariables = (defintion: ActualDefinitionNode): Variable[] => {
+const getVariables = (defintion: ActualDefinitionNode, variables: variablesObject): Variable[] => {
     if (!defintion.variableDefinitions.length) {
         return []
-    } else {
-        return defintion.variableDefinitions.reduce((prev, curr) => {
-            return [
-                ...prev,
-                {
-                    key: curr.variable.name.value,
-                    type: curr.type.name.value,
-                    value: "Dummy_Value",
-                },
-            ]
-        }, [])
     }
+    const varsList = defintion.variableDefinitions.reduce((prev, curr) => {
+        return [
+            ...prev,
+            {
+                key: curr.variable.name.value,
+                type: curr.type.name.value,
+                value: undefinedVariableConst,
+            },
+        ]
+    }, [])
+    Object.entries(variables).forEach(([variableKey, variableValue]) => {
+        const idx = varsList.findIndex((element) => {
+            return element.key === variableKey
+        })
+        if (idx !== -1) {
+            varsList[idx].value = variableValue
+        }
+    })
+
+    const undefinedVariable = varsList.find((varInQuery) => {
+        return varInQuery.value === undefinedVariableConst
+    })
+    if (undefinedVariable) {
+        throw new Error(`The query you want to parse is using variables. This means that you have to supply for every variable that is used in the query a corresponding value. You can parse these values as a second parameter on the options object, on the "variables" key.`)
+    }
+
+    return varsList
 }
 
 export const graphQlQueryToJson = (
     query: string,
     options: {
-        variables?: variablesObject
-    } = {}
+        variables: variablesObject
+    } = {
+        variables: {}
+    }
 ) => {
     const jsonObject = {}
     const parsedQuery = parse(query)
@@ -156,10 +176,12 @@ export const graphQlQueryToJson = (
     const firstDefinition = parsedQuery.definitions[0] as ActualDefinitionNode
     const operation = firstDefinition.operation
 
-    // const variablesUsedInQuery = getVariables(firstDefinition)
+    const variablesUsedInQuery = getVariables(firstDefinition, options.variables)
+    console.log({variablesUsedInQuery})
+
     const selections = getSelections(firstDefinition.selectionSet.selections)
 
     jsonObject[operation] = selections
-    // console.log(JSON.stringify(jsonObject, undefined, 4))
+    console.log(JSON.stringify(jsonObject, undefined, 4))
     return jsonObject
 }

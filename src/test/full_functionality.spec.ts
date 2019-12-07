@@ -129,7 +129,7 @@ describe("Queries", () => {
         })
     })
 
-    it("Simple query using variables", () => {
+    it.only("Simple query using variables", () => {
         const query = `
         query GetThisStuff($name: String, $lastName: String) {
             viewer {
@@ -378,7 +378,7 @@ describe("Enum Types", () => {
     })
 })
 
-describe("Complex examples", () => {
+describe.skip("Complex examples", () => {
     it("Query using name, variables, enums and aliases", () => {
         const variables = {ownership: "ALL", name: ""}
         const query =
