@@ -77,7 +77,6 @@ const getArgumentObject = (argumentFields: Argument[]) => {
 const getArguments = (args) => {
     const argsObj = {}
     args.forEach((arg) => {
-        console.warn({arg})
         if (arg.value.kind === "ObjectValue") {
             argsObj[arg.name.value] = getArgumentObject(arg.value.fields)
         } else if (arg.selectionSet) {
@@ -88,24 +87,23 @@ const getArguments = (args) => {
             argsObj[arg.name.value] = arg.value.value
         }
     })
-    console.warn({argsObj})
     return argsObj
 }
 
 const getSelections = (selections: Selection[]) => {
     const selObj = {}
     selections.forEach((selection) => {
-        if (selection.alias) {
-            selObj[selection.name.value] = {
-                __aliasFor: selection.alias.value,
-                ...getSelections(selection.selectionSet.selections),
-            }
-        }
         if (selection.selectionSet) {
-            // console.warn({gettingSelection: JSON.stringify(selection.selectionSet, undefined, 4)})
-            selObj[selection.name.value] = getSelections(
-                selection.selectionSet.selections
-            )
+            if (selection.alias) {
+                selObj[selection.alias.value] = getSelections(
+                    selection.selectionSet.selections
+                )
+                selObj[selection.alias.value].__aliasFor = selection.name.value
+            } else {
+                selObj[selection.name.value] = getSelections(
+                    selection.selectionSet.selections
+                )
+            }
         }
         if (selection.arguments.length > 0) {
             selObj[selection.name.value].__args = getArguments(
