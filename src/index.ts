@@ -1,5 +1,8 @@
 import {parse} from "graphql"
 import {EnumType} from "json-to-graphql-query"
+import * as isObject from "lodash.isobject"
+import * as isString from "lodash.isstring"
+import * as mapValues from "lodash.mapvalues"
 
 type variablesObject = {
     [variableName: string]: string
@@ -16,6 +19,10 @@ interface Argument {
         value: string
         block: boolean
         fields?: Argument[]
+        name?: {
+            kind: string
+            value: string
+        }
     }
 }
 
@@ -63,12 +70,17 @@ interface ActualDefinitionNode {
 }
 
 const undefinedVariableConst = "undefined_variable"
+const isVariableDropinConst = "_____isVariableDropinConst"
 
 const getArgumentObject = (argumentFields: Argument[]) => {
     const argObj = {}
     argumentFields.forEach((arg) => {
         if (arg.value.kind === "ObjectValue") {
             argObj[arg.name.value] = getArgumentObject(arg.value.fields)
+        } else if (arg.value.kind === "Variable") {
+            argObj[
+                arg.name.value
+            ] = `${arg.value.name.value}${isVariableDropinConst}`
         } else {
             argObj[arg.name.value] = arg.value.value
         }
@@ -81,6 +93,10 @@ const getArguments = (args) => {
     args.forEach((arg) => {
         if (arg.value.kind === "ObjectValue") {
             argsObj[arg.name.value] = getArgumentObject(arg.value.fields)
+        } else if (arg.value.kind === "Variable") {
+            argsObj[
+                arg.name.value
+            ] = `${arg.value.name.value}${isVariableDropinConst}`
         } else if (arg.selectionSet) {
             argsObj[arg.name.value] = getSelections(arg.selectionSet.selections)
         } else if (arg.value.kind === "EnumValue") {
@@ -119,16 +135,10 @@ const getSelections = (selections: Selection[]) => {
     return selObj
 }
 
-interface Variable {
-    key: string
-    type: string
-    value: any
-}
-
-const getVariables = (defintion: ActualDefinitionNode, variables: variablesObject): Variable[] => {
-    if (!defintion.variableDefinitions.length) {
-        return []
-    }
+const checkEachVariableInQueryIsDefined = (
+    defintion: ActualDefinitionNode,
+    variables: variablesObject
+) => {
     const varsList = defintion.variableDefinitions.reduce((prev, curr) => {
         return [
             ...prev,
@@ -152,10 +162,28 @@ const getVariables = (defintion: ActualDefinitionNode, variables: variablesObjec
         return varInQuery.value === undefinedVariableConst
     })
     if (undefinedVariable) {
-        throw new Error(`The query you want to parse is using variables. This means that you have to supply for every variable that is used in the query a corresponding value. You can parse these values as a second parameter on the options object, on the "variables" key.`)
+        throw new Error(
+            `The query you want to parse is using variables. This means that you have to supply for every variable that is used in the query a corresponding value. You can parse these values as a second parameter on the options object, on the "variables" key.`
+        )
     }
 
     return varsList
+}
+
+export const replaceVariables = (obj, variables) => {
+    return mapValues(obj, (value) => {
+        if (
+            isString(value) &&
+            new RegExp(`${isVariableDropinConst}$`).test(value)
+        ) {
+            const variableName = value.replace(isVariableDropinConst, "")
+            return variables[variableName]
+        } else if (isObject(value)) {
+            return replaceVariables(value, variables)
+        } else {
+            return value
+        }
+    })
 }
 
 export const graphQlQueryToJson = (
@@ -163,7 +191,7 @@ export const graphQlQueryToJson = (
     options: {
         variables: variablesObject
     } = {
-        variables: {}
+        variables: {},
     }
 ) => {
     const jsonObject = {}
@@ -176,12 +204,13 @@ export const graphQlQueryToJson = (
     const firstDefinition = parsedQuery.definitions[0] as ActualDefinitionNode
     const operation = firstDefinition.operation
 
-    const variablesUsedInQuery = getVariables(firstDefinition, options.variables)
-    console.log({variablesUsedInQuery})
-
+    checkEachVariableInQueryIsDefined(firstDefinition, options.variables)
     const selections = getSelections(firstDefinition.selectionSet.selections)
-
     jsonObject[operation] = selections
-    console.log(JSON.stringify(jsonObject, undefined, 4))
-    return jsonObject
+    const varsReplacedWithValues = replaceVariables(
+        jsonObject,
+        options.variables
+    )
+    // console.log(JSON.stringify(varsReplacedWithValues, undefined, 4))
+    return varsReplacedWithValues
 }

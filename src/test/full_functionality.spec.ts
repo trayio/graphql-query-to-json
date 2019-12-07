@@ -129,7 +129,7 @@ describe("Queries", () => {
         })
     })
 
-    it.only("Simple query using variables", () => {
+    it("Simple query using variables", () => {
         const query = `
         query GetThisStuff($name: String, $lastName: String) {
             viewer {
@@ -449,5 +449,28 @@ describe.skip("Complex examples", () => {
 describe("Errors", () => {
     it("Throws error if given invalid graphQL schema", () => {
         expect(() => graphQlQueryToJson(`query { asdf sd`)).toThrow()
+    })
+
+    it("Throws error if query has variable which is not passed in", () => {
+        const query = `
+        query GetThisStuff($name: String, $lastName: String) {
+            viewer {
+                personal(criteria: {
+                    name: $name,
+                    lastName: $lastName
+                }) {
+                    name
+                    address
+                }
+            }
+        }
+        `
+        const getResult = () =>
+            graphQlQueryToJson(query, {
+                variables: {
+                    name: "PETER",
+                },
+            })
+        expect(getResult).toThrow()
     })
 })
