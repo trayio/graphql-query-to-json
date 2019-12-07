@@ -98,9 +98,7 @@ const getSelections = (selections: Selection[]) => {
         if (selection.alias) {
             selObj[selection.name.value] = {
                 __aliasFor: selection.alias.value,
-                ...getSelections(
-                    selection.selectionSet.selections
-                )
+                ...getSelections(selection.selectionSet.selections),
             }
         }
         if (selection.selectionSet) {
@@ -137,8 +135,8 @@ const getVariables = (defintion: ActualDefinitionNode): Variable[] => {
                 {
                     key: curr.variable.name.value,
                     type: curr.type.name.value,
-                    value: "Dummy_Value"
-                }
+                    value: "Dummy_Value",
+                },
             ]
         }, [])
     }
@@ -161,9 +159,7 @@ export const graphQlQueryToJson = (
     const operation = firstDefinition.operation
 
     // const variablesUsedInQuery = getVariables(firstDefinition)
-    const selections = getSelections(
-        firstDefinition.selectionSet.selections
-    )
+    const selections = getSelections(firstDefinition.selectionSet.selections)
 
     jsonObject[operation] = selections
     // console.log(JSON.stringify(jsonObject, undefined, 4))
