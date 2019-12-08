@@ -196,7 +196,7 @@ export const graphQlQueryToJson = (
 ) => {
     const jsonObject = {}
     const parsedQuery = parse(query)
-    // console.log(JSON.stringify(parsedQuery, undefined, 4))
+    console.log(JSON.stringify(parsedQuery, undefined, 4))
     if (parsedQuery.definitions.length > 1) {
         throw new Error(`The parsed query has more than one set of definitions`)
     }

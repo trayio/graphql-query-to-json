@@ -378,7 +378,7 @@ describe("Enum Types", () => {
     })
 })
 
-describe.skip("Complex examples", () => {
+describe.only("Complex examples", () => {
     it("Query using name, variables, enums and aliases", () => {
         const variables = {ownership: "ALL", name: ""}
         const query =
