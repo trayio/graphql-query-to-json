@@ -9,7 +9,8 @@
         "declaration": true,
         "moduleResolution": "node",
         "allowSyntheticDefaultImports": true,
-        "types": ["jest", "node"]
+        "types": ["jest", "node"],
+        "sourceMap": true
     },
     "include": ["src/**/*"],
     "exclude": ["./node_modules", "./dist", "prettier.config.js"]

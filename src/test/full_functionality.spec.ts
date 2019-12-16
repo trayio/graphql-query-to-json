@@ -378,7 +378,7 @@ describe("Enum Types", () => {
     })
 })
 
-describe.only("Complex examples", () => {
+describe("Complex examples", () => {
     it("Query using name, variables, enums and aliases", () => {
         const variables = {ownership: "ALL", name: ""}
         const query =
@@ -388,7 +388,7 @@ describe.only("Complex examples", () => {
             __args: {
                 criteria: {
                     name: "",
-                    ownershipQueryType: new EnumType("ALL"),
+                    ownershipQueryType: "ALL",
                 },
             },
             edges: {
@@ -421,7 +421,7 @@ describe.only("Complex examples", () => {
             __aliasFor: "userAuthentications",
             __args: {
                 criteria: {
-                    ownershipQueryType: new EnumType("ALL"),
+                    ownershipQueryType: "ALL",
                 },
             },
             edges: {

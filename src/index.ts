@@ -5,7 +5,7 @@ import * as isString from "lodash.isstring"
 import * as mapValues from "lodash.mapvalues"
 
 type variablesObject = {
-    [variableName: string]: string
+    [variableName: string]: any
 }
 
 interface Argument {
@@ -111,8 +111,9 @@ const getArguments = (args) => {
 const getSelections = (selections: Selection[]) => {
     const selObj = {}
     selections.forEach((selection) => {
+        const selectionHasAlias = selection.alias
         if (selection.selectionSet) {
-            if (selection.alias) {
+            if (selectionHasAlias) {
                 selObj[selection.alias.value] = getSelections(
                     selection.selectionSet.selections
                 )
@@ -124,9 +125,15 @@ const getSelections = (selections: Selection[]) => {
             }
         }
         if (selection.arguments.length > 0) {
-            selObj[selection.name.value].__args = getArguments(
-                selection.arguments
-            )
+            if (selectionHasAlias) {
+                selObj[selection.alias.value].__args = getArguments(
+                    selection.arguments
+                )
+            } else {
+                selObj[selection.name.value].__args = getArguments(
+                    selection.arguments
+                )
+            }
         }
         if (!selection.selectionSet && !selection.arguments.length) {
             selObj[selection.name.value] = true
@@ -144,7 +151,6 @@ const checkEachVariableInQueryIsDefined = (
             ...prev,
             {
                 key: curr.variable.name.value,
-                type: curr.type.name.value,
                 value: undefinedVariableConst,
             },
         ]
@@ -211,6 +217,5 @@ export const graphQlQueryToJson = (
         jsonObject,
         options.variables
     )
-    // console.log(JSON.stringify(varsReplacedWithValues, undefined, 4))
     return varsReplacedWithValues
 }
