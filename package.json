@@ -2,7 +2,7 @@
     "name": "@trayio/graphql-query-to-json",
     "version": "1.0.1",
     "description": "",
-    "main": "index.js",
+    "main": "dist/",
     "scripts": {
         "build": "tsc",
         "watch": "npm run build -- --watch",

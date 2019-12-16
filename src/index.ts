@@ -167,7 +167,7 @@ const checkEachVariableInQueryIsDefined = (
     return varsList
 }
 
-export const replaceVariables = (obj, variables) => {
+const replaceVariables = (obj, variables) => {
     return mapValues(obj, (value) => {
         if (
             isString(value) &&
