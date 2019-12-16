@@ -7,7 +7,6 @@
         "build": "tsc",
         "watch": "npm run build -- --watch",
         "test": "./node_modules/jest/bin/jest.js dist",
-        "debugTests": "__GQTOJSON_DEBUG=true npm test",
         "lintFull": "prettier --write '**/*.{js,jsx,ts,tsx,json}' && eslint --fix '**/*.{js,jsx,ts,tsx}' "
     },
     "author": "",
