@@ -1,5 +1,5 @@
 {
-    "name": "graphql-query-to-json",
+    "name": "@trayio/graphql-query-to-json",
     "version": "1.0.1",
     "description": "",
     "main": "index.js",
