@@ -112,31 +112,22 @@ const getSelections = (selections: Selection[]) => {
     const selObj = {}
     selections.forEach((selection) => {
         const selectionHasAlias = selection.alias
+        const selectionName = selectionHasAlias
+            ? selection.alias.value
+            : selection.name.value
         if (selection.selectionSet) {
+            selObj[selectionName] = getSelections(
+                selection.selectionSet.selections
+            )
             if (selectionHasAlias) {
-                selObj[selection.alias.value] = getSelections(
-                    selection.selectionSet.selections
-                )
                 selObj[selection.alias.value].__aliasFor = selection.name.value
-            } else {
-                selObj[selection.name.value] = getSelections(
-                    selection.selectionSet.selections
-                )
             }
         }
         if (selection.arguments.length > 0) {
-            if (selectionHasAlias) {
-                selObj[selection.alias.value].__args = getArguments(
-                    selection.arguments
-                )
-            } else {
-                selObj[selection.name.value].__args = getArguments(
-                    selection.arguments
-                )
-            }
+            selObj[selectionName].__args = getArguments(selection.arguments)
         }
         if (!selection.selectionSet && !selection.arguments.length) {
-            selObj[selection.name.value] = true
+            selObj[selectionName] = true
         }
     })
     return selObj
@@ -202,7 +193,6 @@ export const graphQlQueryToJson = (
 ) => {
     const jsonObject = {}
     const parsedQuery = parse(query)
-    console.log(JSON.stringify(parsedQuery, undefined, 4))
     if (parsedQuery.definitions.length > 1) {
         throw new Error(`The parsed query has more than one set of definitions`)
     }
