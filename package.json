@@ -1,6 +1,6 @@
 {
     "name": "graphql-query-to-json",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "description": "Convert graphQL queries and mutations to easily readable JSON representations.",
     "main": "dist/index.js",
     "scripts": {
@@ -10,6 +10,7 @@
         "lintFull": "prettier --write '**/*.{js,jsx,ts,tsx,json}' && eslint --fix '**/*.{js,jsx,ts,tsx}'"
     },
     "author": "Tray.io",
+    "homepage": "https://github.com/trayio/graphql-query-to-json",
     "license": "MIT",
     "devDependencies": {
         "@types/jest": "^24.0.23",
