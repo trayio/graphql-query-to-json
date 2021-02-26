@@ -4,9 +4,9 @@
     "description": "Convert graphQL queries and mutations to easily readable JSON representations.",
     "main": "dist/index.js",
     "scripts": {
-        "build": "tsc",
+        "build": "rm -rf dist && tsc",
         "watch": "npm run build -- --watch",
-        "test": "./node_modules/jest/bin/jest.js dist",
+        "test": "jest dist",
         "lintFull": "prettier --write '**/*.{js,jsx,ts,tsx,json}' && eslint --fix '**/*.{js,jsx,ts,tsx}'"
     },
     "author": "Tray.io",
