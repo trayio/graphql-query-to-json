@@ -1,16 +1,16 @@
 {
-    "name": "@trayio/graphql-query-to-json",
+    "name": "graphql-query-to-json",
     "version": "1.0.2",
-    "description": "",
-    "main": "dist/",
+    "description": "Convert graphQL queries and mutations to easily readable JSON representations.",
+    "main": "dist/index.js",
     "scripts": {
         "build": "tsc",
         "watch": "npm run build -- --watch",
         "test": "./node_modules/jest/bin/jest.js dist",
-        "lintFull": "prettier --write '**/*.{js,jsx,ts,tsx,json}' && eslint --fix '**/*.{js,jsx,ts,tsx}' "
+        "lintFull": "prettier --write '**/*.{js,jsx,ts,tsx,json}' && eslint --fix '**/*.{js,jsx,ts,tsx}'"
     },
-    "author": "",
-    "license": "ISC",
+    "author": "Tray.io",
+    "license": "MIT",
     "devDependencies": {
         "@types/jest": "^24.0.23",
         "@types/node": "^12.12.14",
