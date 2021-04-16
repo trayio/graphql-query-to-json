@@ -169,6 +169,34 @@ describe("Queries", () => {
 })
 
 describe("Mutations", () => {
+    it("Emtpy properties", () => {
+        const mutation = `
+            mutation {
+                getPersonalStuff (info: {
+                    emptyString: "",
+                    emptyObject: {},
+                    emptyArray: [],
+                }) {
+                    personal
+                }
+            }
+        `
+        expect(graphQlQueryToJson(mutation)).toEqual({
+            mutation: {
+                getPersonalStuff: {
+                    personal: true,
+                    __args: {
+                        info: {
+                            emptyString: "",
+                            emptyObject: {},
+                            emptyArray: [],
+                        },
+                    },
+                },
+            },
+        })
+    })
+
     it("Simple mutation using string argument with sibling queries", () => {
         const mutation = `
         mutation {
