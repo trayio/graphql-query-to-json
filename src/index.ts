@@ -1,6 +1,7 @@
 import {parse} from "graphql"
 import {EnumType} from "json-to-graphql-query"
 import * as isObject from "lodash.isobject"
+import * as isArray from "lodash.isarray"
 import * as isString from "lodash.isstring"
 import * as mapValues from "lodash.mapvalues"
 
@@ -23,6 +24,7 @@ interface Argument {
             kind: string
             value: string
         }
+        values?: Argument[]
     }
 }
 
@@ -77,6 +79,8 @@ const getArgumentObject = (argumentFields: Argument[]) => {
     argumentFields.forEach((arg) => {
         if (arg.value.kind === "ObjectValue") {
             argObj[arg.name.value] = getArgumentObject(arg.value.fields)
+        } else if (arg.value.kind === "ListValue") {
+            argObj[arg.name.value] = arg.value.values
         } else if (arg.value.kind === "Variable") {
             argObj[
                 arg.name.value
@@ -175,7 +179,7 @@ const replaceVariables = (obj, variables) => {
         ) {
             const variableName = value.replace(isVariableDropinConst, "")
             return variables[variableName]
-        } else if (isObject(value)) {
+        } else if (isObject(value) && !isArray(value)) {
             return replaceVariables(value, variables)
         } else {
             return value

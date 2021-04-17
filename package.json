@@ -21,7 +21,7 @@
         "eslint-config-rickschubert": "^1.0.11",
         "eslint-plugin-jest": "^23.1.1",
         "husky": "^3.1.0",
-        "jest": "^24.9.0",
+        "jest": "^25.5.4",
         "lint-staged": "^9.5.0",
         "prettier": "^1.19.1",
         "typescript": "^3.7.2"
@@ -29,6 +29,7 @@
     "dependencies": {
         "graphql": "^14.5.8",
         "json-to-graphql-query": "^1.9.0",
+        "lodash.isarray": "^4.0.0",
         "lodash.isobject": "^3.0.2",
         "lodash.isstring": "^4.0.1",
         "lodash.mapvalues": "^4.6.0"
