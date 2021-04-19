@@ -1,6 +1,12 @@
 graphql-query-to-json
 =====================
 
+
+![Statement coverage](https://img.shields.io/endpoint?url=https%3A%2F%2F30d15c83-919d-4ca2-bda8-408fae98ad27.trayapp.io%2Fstatements)
+![Function coverage](https://img.shields.io/endpoint?url=https%3A%2F%2F30d15c83-919d-4ca2-bda8-408fae98ad27.trayapp.io%2Ffunctions)
+![Line coverage](https://img.shields.io/endpoint?url=https%3A%2F%2F30d15c83-919d-4ca2-bda8-408fae98ad27.trayapp.io%2Flines)
+![Branches badge](https://img.shields.io/endpoint?url=https%3A%2F%2F30d15c83-919d-4ca2-bda8-408fae98ad27.trayapp.io%2Fbranches)
+
 This is a simple module that takes a graphQL query string and converts it into a JSON object. Think of it as the reverse of the excellent module [json-to-graphql-query](https://www.npmjs.com/package/json-to-graphql-query).
 
 ## Installation
