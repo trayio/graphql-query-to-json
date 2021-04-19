@@ -2,7 +2,7 @@ const fetch = require("node-fetch")
 const {parseCoverageFromFile} = require("./parseCoverageFromFile")
 
 const sendCoverageDataToTrayWorkflow = (coverageData) => {
-    fetch("", {
+    fetch("https://1141188d-d67c-46f9-a6c6-1369999bf294.trayapp.io", {
         method: "POST",
         body: JSON.stringify(coverageData),
         headers: {
