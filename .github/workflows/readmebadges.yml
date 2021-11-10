@@ -2,8 +2,7 @@ name: Update Readme badges
 
 on:
   push:
-    branches:
-      - main
+    branches: [master]
 
 jobs:
   build:
