@@ -105,6 +105,11 @@ const getArguments = (args) => {
             argsObj[arg.name.value] = getSelections(arg.selectionSet.selections)
         } else if (arg.value.kind === "EnumValue") {
             argsObj[arg.name.value] = new EnumType(arg.value.value)
+        } else if (arg.value.kind === "ListValue") {
+            const values = arg.value.values.flatMap(
+                (element: any) => element.value
+            )
+            argsObj[arg.name.value] = values
         } else {
             argsObj[arg.name.value] = arg.value.value
         }

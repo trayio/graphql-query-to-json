@@ -345,6 +345,40 @@ describe("Mutations", () => {
             },
         })
     })
+    it("Argument is a list", () => {
+        const mutation = `
+        mutation {
+            getPersonalStuff(input: [
+                "ONE",
+                "TWO"
+            ]) {
+                personal {
+                    name
+                    address
+                }
+                other {
+                    parents
+                }
+            }
+        }
+        `
+        expect(graphQlQueryToJson(mutation)).toEqual({
+            mutation: {
+                getPersonalStuff: {
+                    __args: {
+                        input: ["ONE", "TWO"],
+                    },
+                    personal: {
+                        name: true,
+                        address: true,
+                    },
+                    other: {
+                        parents: true,
+                    },
+                },
+            },
+        })
+    })
 })
 
 describe("Aliases", () => {
