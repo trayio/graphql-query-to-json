@@ -81,6 +81,8 @@ const getArgumentObject = (argumentFields: Argument[]) => {
             argObj[arg.name.value] = getArgumentObject(arg.value.fields)
         } else if (arg.value.kind === "ListValue") {
             argObj[arg.name.value] = arg.value.values
+        } else if (arg.value.kind === "IntValue") {
+            argObj[arg.name.value] = parseInt(arg.value.value)
         } else if (arg.value.kind === "Variable") {
             argObj[
                 arg.name.value
@@ -105,6 +107,8 @@ const getArguments = (args) => {
             argsObj[arg.name.value] = getSelections(arg.selectionSet.selections)
         } else if (arg.value.kind === "EnumValue") {
             argsObj[arg.name.value] = new EnumType(arg.value.value)
+        } else if (arg.value.kind === "IntValue") {
+            argsObj[arg.name.value] = parseInt(arg.value.value)
         } else if (arg.value.kind === "ListValue") {
             const values = arg.value.values.flatMap(
                 (element: any) => element.value

@@ -300,6 +300,42 @@ describe("Mutations", () => {
         })
     })
 
+    it("Arguments wrapped in object using an int value", () => {
+        const mutation = `
+        mutation {
+            getPersonalStuff(input: {
+                count: 1000,
+            }) {
+                personal {
+                    name
+                    address
+                }
+                other {
+                    parents
+                }
+            }
+        }
+        `
+        expect(graphQlQueryToJson(mutation)).toEqual({
+            mutation: {
+                getPersonalStuff: {
+                    __args: {
+                        input: {
+                            count: 1000,
+                        },
+                    },
+                    personal: {
+                        name: true,
+                        address: true,
+                    },
+                    other: {
+                        parents: true,
+                    },
+                },
+            },
+        })
+    })
+
     it("Arguments wrapped in nested object", () => {
         const mutation = `
         mutation {
@@ -374,6 +410,57 @@ describe("Mutations", () => {
                     },
                     other: {
                         parents: true,
+                    },
+                },
+            },
+        })
+    })
+
+    it("Argument is a int", () => {
+        const mutation = `
+        mutation {
+            getUsers(count: 1000) {
+                personal {
+                    count
+                }
+            }
+        }`
+        expect(graphQlQueryToJson(mutation)).toEqual({
+            mutation: {
+                getUsers: {
+                    __args: {
+                        count: 1000,
+                    },
+                    personal: {
+                        count: true,
+                    },
+                },
+            },
+        })
+    })
+
+    it("Argument is a variable", () => {
+        const query = `
+        mutation {
+            getUsers(count: $count) {
+                personal {
+                    count
+                }
+            }
+        }`
+        const result = graphQlQueryToJson(query, {
+            variables: {
+                count: 1000,
+            },
+        })
+        expect(result).toEqual({
+            mutation: {
+                getUsers: {
+                    __args: {
+                        count: 1000,
+                    },
+                    personal: {
+                        count: true,
                     },
                 },
             },
