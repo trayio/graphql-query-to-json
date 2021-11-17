@@ -438,34 +438,6 @@ describe("Mutations", () => {
             },
         })
     })
-
-    it("Argument is a variable", () => {
-        const query = `
-        mutation {
-            getUsers(count: $count) {
-                personal {
-                    count
-                }
-            }
-        }`
-        const result = graphQlQueryToJson(query, {
-            variables: {
-                count: 1000,
-            },
-        })
-        expect(result).toEqual({
-            mutation: {
-                getUsers: {
-                    __args: {
-                        count: 1000,
-                    },
-                    personal: {
-                        count: true,
-                    },
-                },
-            },
-        })
-    })
 })
 
 describe("Aliases", () => {
