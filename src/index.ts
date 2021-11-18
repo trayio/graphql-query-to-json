@@ -74,6 +74,14 @@ interface ActualDefinitionNode {
 const undefinedVariableConst = "undefined_variable"
 const isVariableDropinConst = "_____isVariableDropinConst"
 
+Object.defineProperty(Array.prototype, "flatMap", {
+    value: function(callback, thisArg) {
+        return this.map(callback, thisArg).reduce((a, b) => a.concat(b), [])
+    },
+    configurable: true,
+    writable: true,
+})
+
 const getArgumentObject = (argumentFields: Argument[]) => {
     const argObj = {}
     argumentFields.forEach((arg) => {
