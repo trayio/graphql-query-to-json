@@ -74,13 +74,11 @@ interface ActualDefinitionNode {
 const undefinedVariableConst = "undefined_variable"
 const isVariableDropinConst = "_____isVariableDropinConst"
 
-Object.defineProperty(Array.prototype, "flatMap", {
-    value: function(callback, thisArg) {
-        return this.map(callback, thisArg).reduce((a, b) => a.concat(b), [])
-    },
-    configurable: true,
-    writable: true,
-})
+const flatMap = (arg, callback) =>
+    arg.reduce(
+        (callbackFn, initialValue) => callbackFn.concat(callback(initialValue)),
+        []
+    )
 
 const getArgumentObject = (argumentFields: Argument[]) => {
     const argObj = {}
@@ -118,7 +116,8 @@ const getArguments = (args) => {
         } else if (arg.value.kind === "IntValue") {
             argsObj[arg.name.value] = parseInt(arg.value.value)
         } else if (arg.value.kind === "ListValue") {
-            const values = arg.value.values.flatMap(
+            const values = flatMap(
+                arg.value.values,
                 (element: any) => element.value
             )
             argsObj[arg.name.value] = values
