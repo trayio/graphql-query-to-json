@@ -1,8 +1,5 @@
 import {parse} from "graphql"
 import {EnumType} from "json-to-graphql-query"
-import * as isObject from "lodash.isobject"
-import * as isArray from "lodash.isarray"
-import * as isString from "lodash.isstring"
 import * as mapValues from "lodash.mapvalues"
 
 type variablesObject = {
@@ -73,6 +70,10 @@ interface ActualDefinitionNode {
 
 const undefinedVariableConst = "undefined_variable"
 const isVariableDropinConst = "_____isVariableDropinConst"
+
+const isString = (arg: any): boolean => typeof arg === "string"
+const isArray = Array.isArray
+const isObject = (arg: any): boolean => arg instanceof Object
 
 const getArgumentObject = (argumentFields: Argument[]) => {
     const argObj = {}
