@@ -71,9 +71,14 @@ interface ActualDefinitionNode {
 const undefinedVariableConst = "undefined_variable"
 const isVariableDropinConst = "_____isVariableDropinConst"
 
-const isString = (arg: any): boolean => typeof arg === "string"
-const isArray = Array.isArray
-const isObject = (arg: any): boolean => arg instanceof Object
+export const flatMap = (arg, callback) =>
+    arg.reduce(
+        (callbackFn, initialValue) => callbackFn.concat(callback(initialValue)),
+        []
+    )
+export const isString = (arg: any): boolean => typeof arg === "string"
+export const isArray = Array.isArray
+export const isObject = (arg: any): boolean => arg instanceof Object
 
 const getArgumentObject = (argumentFields: Argument[]) => {
     const argObj = {}
@@ -111,7 +116,8 @@ const getArguments = (args) => {
         } else if (arg.value.kind === "IntValue") {
             argsObj[arg.name.value] = parseInt(arg.value.value)
         } else if (arg.value.kind === "ListValue") {
-            const values = arg.value.values.flatMap(
+            const values = flatMap(
+                arg.value.values,
                 (element: any) => element.value
             )
             argsObj[arg.name.value] = values
