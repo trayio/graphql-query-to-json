@@ -147,7 +147,7 @@ const getSelections = (selections: Selection[]) => {
             selObj[selectionName].__args = getArguments(selection.arguments)
         }
         if (!selection.selectionSet && !selection.arguments.length) {
-            selObj[selectionName] = true
+            selObj[selectionName] = selectionHasAlias ? {__aliasFor: selection.name.value} : true
         }
     })
     return selObj
