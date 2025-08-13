@@ -4,13 +4,13 @@ const path = require("path")
 const readCoverageHTML = () => {
     const fileToRead = path.join(
         __dirname,
-        "./../coverage/lcov-report/index.html"
+        "./../coverage/lcov-report/index.html",
     )
     try {
         return fs.readFileSync(fileToRead, "utf-8")
     } catch (error) {
         throw new Error(
-            `We were unable to read the ${fileToRead} file. Are you sure it has been written?`
+            `We were unable to read the ${fileToRead} file. Are you sure it has been written?`,
         )
     }
 }
@@ -38,7 +38,7 @@ const retrieveNumberStatistics = (match, returnUnknown) => {
             numbers = "Unknown"
         } else {
             throw new Error(
-                `Unable to retrieve the number matches from the HTML`
+                `Unable to retrieve the number matches from the HTML`,
             )
         }
     } else {
@@ -51,7 +51,7 @@ const retrieveCoverageStatistics = (html, type, returnUnknown = false) => {
     const matches = html.match(new RegExp(`.*\n.+>${type}<.+\n.+/`, "gmi"))
     if (!matches) {
         throw new Error(
-            `Unable to parse coverage statistics in the HTML for type $"{type}".`
+            `Unable to parse coverage statistics in the HTML for type $"{type}".`,
         )
     }
     const match = matches[0]
@@ -68,22 +68,22 @@ exports.parseCoverageFromFile = (options = {}) => {
     const statementData = retrieveCoverageStatistics(
         htmlFile,
         "statements",
-        options.returnUnknown
+        options.returnUnknown,
     )
     const branchesData = retrieveCoverageStatistics(
         htmlFile,
         "branches",
-        options.returnUnknown
+        options.returnUnknown,
     )
     const functionsData = retrieveCoverageStatistics(
         htmlFile,
         "functions",
-        options.returnUnknown
+        options.returnUnknown,
     )
     const linesData = retrieveCoverageStatistics(
         htmlFile,
         "lines",
-        options.returnUnknown
+        options.returnUnknown,
     )
     return {
         statementData,

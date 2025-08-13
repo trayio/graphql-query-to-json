@@ -41,6 +41,7 @@ const result = graphQlQueryToJson(query, {
         lastName: "SCHMIDT",
     },
 })
+// Test assertion to demonstrate the outcome of 'graphQlQueryToJson'
 expect(result).toEqual({
     query: {
         viewer: {
