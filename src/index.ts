@@ -140,7 +140,16 @@ const getSelections = (selections: Selection[]) => {
             if (selectionHasAlias) {
                 selObj[selection.alias.value].__aliasFor = selection.name.value
             }
+        } else {
+            selObj[selectionName] = {}
         }
+
+        console.log("AZRS selections", selections)
+        console.log("AZRS selObj", selObj)
+        console.log("AZRS selection name", selectionName)
+        console.log("AZRS selObj[selectionName]", selObj[selectionName])
+        console.log("AZRS selection arguments", selection.arguments)
+
         if (selection.arguments.length > 0) {
             selObj[selectionName].__args = getArguments(selection.arguments)
         }
