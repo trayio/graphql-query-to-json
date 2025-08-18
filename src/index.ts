@@ -74,7 +74,7 @@ const isVariableDropinConst = "_____isVariableDropinConst"
 export const flatMap = (arg, callback) =>
     arg.reduce(
         (callbackFn, initialValue) => callbackFn.concat(callback(initialValue)),
-        []
+        [],
     )
 export const isString = (arg: any): boolean => typeof arg === "string"
 export const isArray = Array.isArray
@@ -90,9 +90,8 @@ const getArgumentObject = (argumentFields: Argument[]) => {
         } else if (arg.value.kind === "IntValue") {
             argObj[arg.name.value] = parseInt(arg.value.value)
         } else if (arg.value.kind === "Variable") {
-            argObj[
-                arg.name.value
-            ] = `${arg.value.name.value}${isVariableDropinConst}`
+            argObj[arg.name.value] =
+                `${arg.value.name.value}${isVariableDropinConst}`
         } else {
             argObj[arg.name.value] = arg.value.value
         }
@@ -106,9 +105,8 @@ const getArguments = (args) => {
         if (arg.value.kind === "ObjectValue") {
             argsObj[arg.name.value] = getArgumentObject(arg.value.fields)
         } else if (arg.value.kind === "Variable") {
-            argsObj[
-                arg.name.value
-            ] = `${arg.value.name.value}${isVariableDropinConst}`
+            argsObj[arg.name.value] =
+                `${arg.value.name.value}${isVariableDropinConst}`
         } else if (arg.selectionSet) {
             argsObj[arg.name.value] = getSelections(arg.selectionSet.selections)
         } else if (arg.value.kind === "EnumValue") {
@@ -118,7 +116,7 @@ const getArguments = (args) => {
         } else if (arg.value.kind === "ListValue") {
             const values = flatMap(
                 arg.value.values,
-                (element: any) => element.value
+                (element: any) => element.value,
             )
             argsObj[arg.name.value] = values
         } else {
@@ -137,7 +135,7 @@ const getSelections = (selections: Selection[]) => {
             : selection.name.value
         if (selection.selectionSet) {
             selObj[selectionName] = getSelections(
-                selection.selectionSet.selections
+                selection.selectionSet.selections,
             )
             if (selectionHasAlias) {
                 selObj[selection.alias.value].__aliasFor = selection.name.value
@@ -155,7 +153,7 @@ const getSelections = (selections: Selection[]) => {
 
 const checkEachVariableInQueryIsDefined = (
     defintion: ActualDefinitionNode,
-    variables: variablesObject
+    variables: variablesObject,
 ) => {
     const varsList = defintion.variableDefinitions.reduce((prev, curr) => {
         return [
@@ -180,7 +178,7 @@ const checkEachVariableInQueryIsDefined = (
     })
     if (undefinedVariable) {
         throw new Error(
-            `The query you want to parse is using variables. This means that you have to supply for every variable that is used in the query a corresponding value. You can parse these values as a second parameter on the options object, on the "variables" key.`
+            `The query you want to parse is using variables. This means that you have to supply for every variable that is used in the query a corresponding value. You can parse these values as a second parameter on the options object, on the "variables" key.`,
         )
     }
 
@@ -209,7 +207,7 @@ export const graphQlQueryToJson = (
         variables: variablesObject
     } = {
         variables: {},
-    }
+    },
 ) => {
     const jsonObject = {}
     const parsedQuery = parse(query)
@@ -225,7 +223,7 @@ export const graphQlQueryToJson = (
     jsonObject[operation] = selections
     const varsReplacedWithValues = replaceVariables(
         jsonObject,
-        options.variables
+        options.variables,
     )
     return varsReplacedWithValues
 }
