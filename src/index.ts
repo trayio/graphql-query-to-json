@@ -142,9 +142,12 @@ const getSelections = (selections: Selection[]) => {
             }
         }
         if (selection.arguments.length > 0) {
+            if (!selObj[selectionName]) {
+                selObj[selectionName] = {}
+            }
             selObj[selectionName].__args = getArguments(selection.arguments)
         }
-        if (!selection.selectionSet && !selection.arguments.length) {
+        if (!selection.selectionSet && selection.arguments.length === 0) {
             selObj[selectionName] = true
         }
     })
