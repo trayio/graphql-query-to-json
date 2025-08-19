@@ -651,6 +651,46 @@ describe("Errors", () => {
             })
         expect(getResult).toThrow()
     })
+
+    it("Should throw error when query has multiple operations", () => {
+        const multipleOperationsQuery = `
+query GetUser {
+    user {
+        name
+    }
+}
+
+query GetPosts {
+    posts {
+        title
+    }
+}
+`
+
+        expect(() => {
+            graphQlQueryToJson(multipleOperationsQuery)
+        }).toThrow("The parsed query has more than one set of definitions")
+    })
+
+    it("Should throw error when mixing queries and mutations", () => {
+        const mixedOperationsQuery = `
+query GetUser {
+    user {
+        name
+    }
+}
+
+mutation CreatePost {
+    createPost(title: "Test") {
+        id
+    }
+}
+`
+
+        expect(() => {
+            graphQlQueryToJson(mixedOperationsQuery)
+        }).toThrow("The parsed query has more than one set of definitions")
+    })
 })
 
 describe("Helpers", () => {
