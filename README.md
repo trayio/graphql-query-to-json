@@ -10,12 +10,10 @@ A TypeScript library that converts GraphQL query and mutation strings into struc
 
 ## Features
 
-- ✅ **Full GraphQL Support**: Queries, mutations, and subscriptions
+- ✅ **Full GraphQL Support**: Queries and mutations
 - ✅ **Variable Handling**: Complete variable substitution with validation
 - ✅ **Arguments**: All argument types (strings, integers, objects, arrays, enums)
 - ✅ **Aliases**: Field aliasing with metadata preservation
-- ✅ **Nested Objects**: Arbitrarily deep nesting support
-- ✅ **Scalar Fields with Arguments**: Recent enhancement for scalar field arguments
 - ✅ **Type Safety**: Full TypeScript support with comprehensive type definitions
 - ✅ **Error Handling**: Descriptive error messages for malformed queries and missing variables
 - ✅ **Framework Agnostic**: Works with any JavaScript/TypeScript environment
@@ -221,11 +219,6 @@ const result = graphQlQueryToJson(mutation, {
         input: {
             name: "John Doe",
             email: "john@example.com",
-            preferences: ["email", "sms"],
-            metadata: {
-                source: "signup_form",
-                campaign: "spring_2024"
-            }
         }
     }
 })
@@ -237,12 +230,7 @@ const result = graphQlQueryToJson(mutation, {
       __args: {
         input: {
           name: "John Doe",
-          email: "john@example.com",
-          preferences: ["email", "sms"],
-          metadata: {
-            source: "signup_form",
-            campaign: "spring_2024"
-          }
+          email: "john@example.com"
         }
       },
       id: true,
@@ -568,45 +556,6 @@ const result = graphQlQueryToJson(query, {
 - Error if variables are referenced but not provided
 - Error if query contains multiple operations
 
-### Helper Functions
-
-The library also exports utility functions:
-
-```ts
-import { flatMap, isString, isArray, isObject } from 'graphql-query-to-json'
-
-// Custom array flattening
-flatMap([1, 2, 3], x => [x, x + 1]) // [1, 2, 2, 3, 3, 4]
-
-// Type checking utilities
-isString("hello") // true
-isArray([1, 2, 3]) // true
-isObject({}) // true
-```
-
-## Error Handling
-
-The library provides descriptive error messages:
-
-```ts
-// Missing variables
-const query = `query($id: ID!) { user(id: $id) { name } }`
-graphQlQueryToJson(query)
-// Throws: "The query you want to parse is using variables..."
-
-// Invalid syntax
-graphQlQueryToJson(`query { user { name`)
-// Throws GraphQL parse error
-
-// Multiple operations
-const query = `
-query GetUser { user { name } }
-query GetPosts { posts { title } }
-`
-graphQlQueryToJson(query)
-// Throws: "The parsed query has more than one set of definitions"
-```
-
 ## TypeScript Support
 
 Full TypeScript definitions are included:
@@ -638,7 +587,7 @@ npm run watch        # Build in watch mode
 
 ### Testing
 ```bash
-npm test             # Run Jest tests
+npm test              # Run Jest tests
 npm run test:coverage # Run tests with coverage
 ```
 
@@ -664,12 +613,10 @@ Key components:
 
 ## Use Cases
 
-- **Query Analysis**: Programmatically analyze GraphQL query structure
+- **Query Analysis**: Programmatically analyse GraphQL query structure
 - **Query Transformation**: Convert between query formats
-- **Documentation Generation**: Extract field usage patterns
 - **Testing**: Validate query structures in tests
-- **Query Building**: Dynamically construct queries from JSON
-- **Schema Introspection**: Analyze client query patterns
+- **Documentation Generation**: Extract field usage patterns
 - **Caching Keys**: Generate cache keys from query structure
 
 ## Contributing
