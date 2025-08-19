@@ -1,7 +1,7 @@
-const fetch = require("node-fetch")
 const {parseCoverageFromFile} = require("./parseCoverageFromFile")
 
-const sendCoverageDataToTrayWorkflow = (coverageData) => {
+const sendCoverageDataToTrayWorkflow = async (coverageData) => {
+    const fetch = (await import("node-fetch")).default
     fetch("https://1141188d-d67c-46f9-a6c6-1369999bf294.trayapp.io", {
         method: "POST",
         body: JSON.stringify(coverageData),
@@ -13,5 +13,9 @@ const sendCoverageDataToTrayWorkflow = (coverageData) => {
     })
 }
 
-const coverageData = parseCoverageFromFile()
-sendCoverageDataToTrayWorkflow(coverageData)
+const main = async () => {
+    const coverageData = parseCoverageFromFile()
+    await sendCoverageDataToTrayWorkflow(coverageData)
+}
+
+main().catch(console.error)
