@@ -77,7 +77,6 @@ const flatMap = (arg, callback) =>
         [],
     )
 const isString = (arg: any): boolean => typeof arg === "string"
-const isArray = Array.isArray
 const isObject = (arg: any): boolean => arg instanceof Object
 
 const getArgumentObject = (argumentFields: Argument[]) => {
@@ -196,7 +195,7 @@ const replaceVariables = (obj, variables) => {
         ) {
             const variableName = value.replace(isVariableDropinConst, "")
             return variables[variableName]
-        } else if (isObject(value) && !isArray(value)) {
+        } else if (isObject(value) && !Array.isArray(value)) {
             return replaceVariables(value, variables)
         } else {
             return value
