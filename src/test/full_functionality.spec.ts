@@ -172,6 +172,29 @@ describe("Queries", () => {
             },
         })
     })
+
+    it("Scalar field with arguments", () => {
+        const query = `
+        query fooBarAlias($name: String!, $lastName: String!) {
+            fooBar(name: $name, lastName: $lastName)
+        }`
+        const result = graphQlQueryToJson(query, {
+            variables: {
+                name: "PETER",
+                lastName: "SCHMIDT",
+            },
+        })
+        expect(result).toEqual({
+            query: {
+                fooBar: {
+                    __args: {
+                        name: "PETER",
+                        lastName: "SCHMIDT",
+                    },
+                },
+            },
+        })
+    })
 })
 
 describe("Mutations", () => {
