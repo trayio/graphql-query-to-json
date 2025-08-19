@@ -71,14 +71,14 @@ interface ActualDefinitionNode {
 const undefinedVariableConst = "undefined_variable"
 const isVariableDropinConst = "_____isVariableDropinConst"
 
-export const flatMap = (arg, callback) =>
+const flatMap = (arg, callback) =>
     arg.reduce(
         (callbackFn, initialValue) => callbackFn.concat(callback(initialValue)),
         [],
     )
-export const isString = (arg: any): boolean => typeof arg === "string"
-export const isArray = Array.isArray
-export const isObject = (arg: any): boolean => arg instanceof Object
+const isString = (arg: any): boolean => typeof arg === "string"
+const isArray = Array.isArray
+const isObject = (arg: any): boolean => arg instanceof Object
 
 const getArgumentObject = (argumentFields: Argument[]) => {
     const argObj = {}

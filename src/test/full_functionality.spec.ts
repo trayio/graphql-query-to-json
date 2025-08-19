@@ -1,9 +1,5 @@
 import {
     graphQlQueryToJson,
-    flatMap,
-    isString,
-    isObject,
-    isArray,
 } from "../index"
 import {EnumType} from "json-to-graphql-query"
 
@@ -690,24 +686,5 @@ mutation CreatePost {
         expect(() => {
             graphQlQueryToJson(mixedOperationsQuery)
         }).toThrow("The parsed query has more than one set of definitions")
-    })
-})
-
-describe("Helpers", () => {
-    it("flatMap", () => {
-        const result = flatMap([1, 2, 3], (x) => [x, x + 1])
-        expect(result).toEqual([1, 2, 2, 3, 3, 4])
-    })
-    it("isString", () => {
-        expect(isString("asdf")).toBe(true)
-        expect(isString(1)).toBe(false)
-    })
-    it("isObject", () => {
-        expect(isObject({})).toBe(true)
-        expect(isObject(1)).toBe(false)
-    })
-    it("isArray", () => {
-        expect(isArray([])).toBe(true)
-        expect(isArray(1)).toBe(false)
     })
 })
