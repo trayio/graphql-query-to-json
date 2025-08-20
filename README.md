@@ -10,7 +10,7 @@ A TypeScript library that converts GraphQL query and mutation strings into struc
 
 ## Features
 
-- ✅ **Full GraphQL Support**: Queries and mutations
+- ✅ **Full GraphQL Support**: Queries, mutations and subscriptions
 - ✅ **Variable Handling**: Complete variable substitution with validation
 - ✅ **Arguments**: All argument types (strings, integers, objects, arrays, enums)
 - ✅ **Aliases**: Field aliasing with metadata preservation
