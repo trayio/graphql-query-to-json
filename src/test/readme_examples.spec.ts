@@ -103,7 +103,7 @@ query {
         })
     })
 
-    describe("Mutations with Simple Argument", () => {
+    describe("Mutations with Simple Arguments", () => {
         it("Simple mutation using string argument with sibling queries", () => {
             const mutation = `
         mutation {
