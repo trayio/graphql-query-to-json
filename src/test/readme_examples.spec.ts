@@ -126,11 +126,6 @@ mutation CreateUser($input: UserInput!) {
                     input: {
                         name: "John Doe",
                         email: "john@example.com",
-                        preferences: ["email", "sms"],
-                        metadata: {
-                            source: "signup_form",
-                            campaign: "spring_2024",
-                        },
                     },
                 },
             })
@@ -142,11 +137,6 @@ mutation CreateUser($input: UserInput!) {
                             input: {
                                 name: "John Doe",
                                 email: "john@example.com",
-                                preferences: ["email", "sms"],
-                                metadata: {
-                                    source: "signup_form",
-                                    campaign: "spring_2024",
-                                },
                             },
                         },
                         id: true,
