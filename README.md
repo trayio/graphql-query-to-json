@@ -194,6 +194,43 @@ const result = graphQlQueryToJson(query)
 }
 ```
 
+### Mutations with Simple Arguments
+
+```ts
+const mutation = `
+mutation {
+    getPersonalStuff(name: "PETER") {
+        personal {
+            name
+            address
+        }
+        other {
+            parents
+        }
+    }
+}
+`
+const result = graphQlQueryToJson(mutation)
+
+// Output:
+{
+  mutation: {
+    getPersonalStuff: {
+      __args: {
+        name: "PETER",
+      },
+      personal: {
+        name: true,
+        address: true,
+      },
+      other: {
+        parents: true,
+      },
+    },
+  },
+}
+```
+
 ### Mutations with Complex Arguments
 
 ```ts
