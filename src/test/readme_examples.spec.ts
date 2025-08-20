@@ -137,7 +137,7 @@ query {
         })
     })
 
-    describe("4. Mutations with Complex Arguments", () => {
+    describe("5. Mutations with Complex Arguments", () => {
         it("Mutation with nested object arguments", () => {
             const mutation = `
 mutation CreateUser($input: UserInput!) {
@@ -188,7 +188,7 @@ mutation CreateUser($input: UserInput!) {
         })
     })
 
-    describe("5. Aliases and Field Renaming", () => {
+    describe("6. Aliases and Field Renaming", () => {
         it("Multiple aliases for the same field", () => {
             const query = `
 query {
@@ -234,7 +234,7 @@ query {
         })
     })
 
-    describe("6. Enum Types", () => {
+    describe("7. Enum Types", () => {
         it("Enums in arguments", () => {
             const query = `
 query {
@@ -274,7 +274,7 @@ query {
         })
     })
 
-    describe("7. Array Arguments", () => {
+    describe("8. Array Arguments", () => {
         it("Lists and arrays as arguments", () => {
             const mutation = `
 mutation {
@@ -309,7 +309,7 @@ mutation {
         })
     })
 
-    describe("8. Empty Values and Edge Cases", () => {
+    describe("9. Empty Values and Edge Cases", () => {
         it("Empty strings, objects, and arrays", () => {
             const mutation = `
 mutation {
@@ -348,7 +348,7 @@ mutation {
         })
     })
 
-    describe("9. Deeply Nested Objects", () => {
+    describe("10. Deeply Nested Objects", () => {
         it("Complex nested structures", () => {
             const query = `
 query {
@@ -398,7 +398,7 @@ query {
         })
     })
 
-    describe("10. Mixed Variable Types", () => {
+    describe("11. Mixed Variable Types", () => {
         it("Various data types as variables", () => {
             const query = `
 query SearchContent(
