@@ -18,4 +18,5 @@ const main = async () => {
     await sendCoverageDataToTrayWorkflow(coverageData)
 }
 
+// eslint-disable-next-line no-console
 main().catch(console.error)

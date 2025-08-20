@@ -1,6 +1,4 @@
-import {
-    graphQlQueryToJson,
-} from "../index"
+import {graphQlQueryToJson} from "../index"
 import {EnumType} from "json-to-graphql-query"
 
 describe("Queries", () => {

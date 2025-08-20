@@ -103,6 +103,40 @@ query {
         })
     })
 
+    describe("4. Mutations with Simple Argument", () => {
+        it("Simple mutation using string argument with sibling queries", () => {
+            const mutation = `
+        mutation {
+            getPersonalStuff(name: "PETER") {
+                personal {
+                    name
+                    address
+                }
+                other {
+                    parents
+                }
+            }
+        }
+        `
+            expect(graphQlQueryToJson(mutation)).toEqual({
+                mutation: {
+                    getPersonalStuff: {
+                        __args: {
+                            name: "PETER",
+                        },
+                        personal: {
+                            name: true,
+                            address: true,
+                        },
+                        other: {
+                            parents: true,
+                        },
+                    },
+                },
+            })
+        })
+    })
+
     describe("4. Mutations with Complex Arguments", () => {
         it("Mutation with nested object arguments", () => {
             const mutation = `
