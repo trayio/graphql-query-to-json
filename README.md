@@ -86,7 +86,7 @@ The library follows predictable transformation patterns:
 
 ## Comprehensive Examples
 
-### 1. Simple Queries
+### Simple Queries
 
 ```ts
 // Single and multiple fields
@@ -124,7 +124,7 @@ const result = graphQlQueryToJson(query)
 }
 ```
 
-### 2. Variables and Arguments
+### Variables and Arguments
 
 ```ts
 // Query with variables
@@ -164,7 +164,7 @@ const result = graphQlQueryToJson(query, {
 }
 ```
 
-### 3. Scalar Fields with Arguments
+### Scalar Fields with Arguments
 
 ```ts
 // Scalar fields that accept arguments
@@ -194,7 +194,7 @@ const result = graphQlQueryToJson(query)
 }
 ```
 
-### 4. Mutations with Complex Arguments
+### Mutations with Complex Arguments
 
 ```ts
 // Mutation with nested object arguments
@@ -247,7 +247,7 @@ const result = graphQlQueryToJson(mutation, {
 }
 ```
 
-### 5. Aliases and Field Renaming
+### Aliases and Field Renaming
 
 ```ts
 // Multiple aliases for the same field
@@ -295,7 +295,7 @@ const result = graphQlQueryToJson(query)
 }
 ```
 
-### 6. Enum Types
+### Enum Types
 
 ```ts
 // Enums in arguments
@@ -337,7 +337,7 @@ const result = graphQlQueryToJson(query)
 }
 ```
 
-### 7. Array Arguments
+### Array Arguments
 
 ```ts
 // Lists and arrays as arguments
@@ -378,7 +378,7 @@ const result = graphQlQueryToJson(mutation)
 }
 ```
 
-### 8. Empty Values and Edge Cases
+### Empty Values and Edge Cases
 
 ```ts
 // Empty strings, objects, and arrays
@@ -419,7 +419,7 @@ const result = graphQlQueryToJson(mutation)
 }
 ```
 
-### 9. Deeply Nested Objects
+### Deeply Nested Objects
 
 ```ts
 // Complex nested structures
@@ -471,7 +471,7 @@ const result = graphQlQueryToJson(query)
 }
 ```
 
-### 10. Mixed Variable Types
+### Mixed Variable Types
 
 ```ts
 // Various data types as variables
