@@ -686,3 +686,223 @@ mutation CreatePost {
         }).toThrow("The parsed query has more than one set of definitions")
     })
 })
+
+describe("Edge Cases and Additional Coverage", () => {
+    it("Handles query with no variable definitions", () => {
+        const query = `
+            query {
+                viewer {
+                    name
+                }
+            }
+        `
+        expect(() => graphQlQueryToJson(query, {variables: {}})).not.toThrow()
+    })
+
+    it("Handles boolean arguments", () => {
+        const query = `
+            query {
+                viewer {
+                    posts(published: true, featured: false) {
+                        title
+                    }
+                }
+            }
+        `
+        expect(graphQlQueryToJson(query)).toEqual({
+            query: {
+                viewer: {
+                    posts: {
+                        __args: {
+                            published: true,
+                            featured: false,
+                        },
+                        title: true,
+                    },
+                },
+            },
+        })
+    })
+
+    it("Handles float arguments as strings", () => {
+        const query = `
+            query {
+                viewer {
+                    products(rating: 4.5, price: 99.99) {
+                        name
+                    }
+                }
+            }
+        `
+        expect(graphQlQueryToJson(query)).toEqual({
+            query: {
+                viewer: {
+                    products: {
+                        __args: {
+                            rating: "4.5",
+                            price: "99.99",
+                        },
+                        name: true,
+                    },
+                },
+            },
+        })
+    })
+
+    it("Handles null arguments as undefined", () => {
+        const query = `
+            query {
+                viewer {
+                    profile(avatar: null) {
+                        name
+                    }
+                }
+            }
+        `
+        expect(graphQlQueryToJson(query)).toEqual({
+            query: {
+                viewer: {
+                    profile: {
+                        __args: {
+                            avatar: undefined,
+                        },
+                        name: true,
+                    },
+                },
+            },
+        })
+    })
+
+    it("Handles simple string arrays in arguments", () => {
+        const query = `
+            query {
+                search(tags: ["tech", "news"]) {
+                    results
+                }
+            }
+        `
+        expect(graphQlQueryToJson(query)).toEqual({
+            query: {
+                search: {
+                    __args: {
+                        tags: ["tech", "news"],
+                    },
+                    results: true,
+                },
+            },
+        })
+    })
+
+    it("Handles variables with mixed types", () => {
+        const query = `
+            query TestQuery($text: String!, $count: Int!, $active: Boolean!, $rating: Float!) {
+                search(filter: {
+                    text: $text,
+                    count: $count,
+                    active: $active,
+                    rating: $rating
+                }) {
+                    results
+                }
+            }
+        `
+        const result = graphQlQueryToJson(query, {
+            variables: {
+                text: "test",
+                count: 5,
+                active: true,
+                rating: 3.7,
+            },
+        })
+        expect(result).toEqual({
+            query: {
+                search: {
+                    __args: {
+                        filter: {
+                            text: "test",
+                            count: 5,
+                            active: true,
+                            rating: 3.7,
+                        },
+                    },
+                    results: true,
+                },
+            },
+        })
+    })
+
+    it("Handles simple variable replacement in nested objects", () => {
+        const query = `
+            query TestQuery($name: String!) {
+                user(filter: { name: $name, active: true }) {
+                    id
+                    name
+                }
+            }
+        `
+        const result = graphQlQueryToJson(query, {
+            variables: {
+                name: "Alice",
+            },
+        })
+        expect(result).toEqual({
+            query: {
+                user: {
+                    __args: {
+                        filter: {
+                            name: "Alice",
+                            active: true,
+                        },
+                    },
+                    id: true,
+                    name: true,
+                },
+            },
+        })
+    })
+
+    it("Handles enums in lists", () => {
+        const query = `
+            query {
+                posts(statuses: [PUBLISHED, DRAFT, ARCHIVED]) {
+                    title
+                }
+            }
+        `
+        expect(graphQlQueryToJson(query)).toEqual({
+            query: {
+                posts: {
+                    __args: {
+                        statuses: ["PUBLISHED", "DRAFT", "ARCHIVED"],
+                    },
+                    title: true,
+                },
+            },
+        })
+    })
+
+    it("Handles string concatenation edge case in variable replacement", () => {
+        const query = `
+            query TestQuery($prefix: String!) {
+                search(term: $prefix) {
+                    results
+                }
+            }
+        `
+        const result = graphQlQueryToJson(query, {
+            variables: {
+                prefix: "test_prefix_value",
+            },
+        })
+        expect(result).toEqual({
+            query: {
+                search: {
+                    __args: {
+                        term: "test_prefix_value",
+                    },
+                    results: true,
+                },
+            },
+        })
+    })
+})
