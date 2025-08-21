@@ -10,12 +10,10 @@ A TypeScript library that converts GraphQL query and mutation strings into struc
 
 ## Features
 
-- ✅ **Full GraphQL Support**: Queries, mutations, and subscriptions
+- ✅ **Full GraphQL Support**: Queries, mutations and subscriptions
 - ✅ **Variable Handling**: Complete variable substitution with validation
 - ✅ **Arguments**: All argument types (strings, integers, objects, arrays, enums)
 - ✅ **Aliases**: Field aliasing with metadata preservation
-- ✅ **Nested Objects**: Arbitrarily deep nesting support
-- ✅ **Scalar Fields with Arguments**: Recent enhancement for scalar field arguments
 - ✅ **Type Safety**: Full TypeScript support with comprehensive type definitions
 - ✅ **Error Handling**: Descriptive error messages for malformed queries and missing variables
 - ✅ **Framework Agnostic**: Works with any JavaScript/TypeScript environment
@@ -88,7 +86,7 @@ The library follows predictable transformation patterns:
 
 ## Comprehensive Examples
 
-### 1. Simple Queries
+### Simple Queries
 
 ```ts
 // Single and multiple fields
@@ -126,7 +124,7 @@ const result = graphQlQueryToJson(query)
 }
 ```
 
-### 2. Variables and Arguments
+### Variables and Arguments
 
 ```ts
 // Query with variables
@@ -166,7 +164,7 @@ const result = graphQlQueryToJson(query, {
 }
 ```
 
-### 3. Scalar Fields with Arguments
+### Scalar Fields with Arguments
 
 ```ts
 // Scalar fields that accept arguments
@@ -196,7 +194,44 @@ const result = graphQlQueryToJson(query)
 }
 ```
 
-### 4. Mutations with Complex Arguments
+### Mutations with Simple Arguments
+
+```ts
+const mutation = `
+mutation {
+    getPersonalStuff(name: "PETER") {
+        personal {
+            name
+            address
+        }
+        other {
+            parents
+        }
+    }
+}
+`
+const result = graphQlQueryToJson(mutation)
+
+// Output:
+{
+  mutation: {
+    getPersonalStuff: {
+      __args: {
+        name: "PETER",
+      },
+      personal: {
+        name: true,
+        address: true,
+      },
+      other: {
+        parents: true,
+      },
+    },
+  },
+}
+```
+
+### Mutations with Complex Arguments
 
 ```ts
 // Mutation with nested object arguments
@@ -221,11 +256,6 @@ const result = graphQlQueryToJson(mutation, {
         input: {
             name: "John Doe",
             email: "john@example.com",
-            preferences: ["email", "sms"],
-            metadata: {
-                source: "signup_form",
-                campaign: "spring_2024"
-            }
         }
     }
 })
@@ -237,12 +267,7 @@ const result = graphQlQueryToJson(mutation, {
       __args: {
         input: {
           name: "John Doe",
-          email: "john@example.com",
-          preferences: ["email", "sms"],
-          metadata: {
-            source: "signup_form",
-            campaign: "spring_2024"
-          }
+          email: "john@example.com"
         }
       },
       id: true,
@@ -259,7 +284,7 @@ const result = graphQlQueryToJson(mutation, {
 }
 ```
 
-### 5. Aliases and Field Renaming
+### Aliases and Field Renaming
 
 ```ts
 // Multiple aliases for the same field
@@ -307,7 +332,7 @@ const result = graphQlQueryToJson(query)
 }
 ```
 
-### 6. Enum Types
+### Enum Types
 
 ```ts
 // Enums in arguments
@@ -349,7 +374,7 @@ const result = graphQlQueryToJson(query)
 }
 ```
 
-### 7. Array Arguments
+### Array Arguments
 
 ```ts
 // Lists and arrays as arguments
@@ -390,7 +415,7 @@ const result = graphQlQueryToJson(mutation)
 }
 ```
 
-### 8. Empty Values and Edge Cases
+### Empty Values and Edge Cases
 
 ```ts
 // Empty strings, objects, and arrays
@@ -431,7 +456,7 @@ const result = graphQlQueryToJson(mutation)
 }
 ```
 
-### 9. Deeply Nested Objects
+### Deeply Nested Objects
 
 ```ts
 // Complex nested structures
@@ -483,7 +508,7 @@ const result = graphQlQueryToJson(query)
 }
 ```
 
-### 10. Mixed Variable Types
+### Mixed Variable Types
 
 ```ts
 // Various data types as variables
@@ -568,45 +593,6 @@ const result = graphQlQueryToJson(query, {
 - Error if variables are referenced but not provided
 - Error if query contains multiple operations
 
-### Helper Functions
-
-The library also exports utility functions:
-
-```ts
-import { flatMap, isString, isArray, isObject } from 'graphql-query-to-json'
-
-// Custom array flattening
-flatMap([1, 2, 3], x => [x, x + 1]) // [1, 2, 2, 3, 3, 4]
-
-// Type checking utilities
-isString("hello") // true
-isArray([1, 2, 3]) // true
-isObject({}) // true
-```
-
-## Error Handling
-
-The library provides descriptive error messages:
-
-```ts
-// Missing variables
-const query = `query($id: ID!) { user(id: $id) { name } }`
-graphQlQueryToJson(query)
-// Throws: "The query you want to parse is using variables..."
-
-// Invalid syntax
-graphQlQueryToJson(`query { user { name`)
-// Throws GraphQL parse error
-
-// Multiple operations
-const query = `
-query GetUser { user { name } }
-query GetPosts { posts { title } }
-`
-graphQlQueryToJson(query)
-// Throws: "The parsed query has more than one set of definitions"
-```
-
 ## TypeScript Support
 
 Full TypeScript definitions are included:
@@ -638,7 +624,7 @@ npm run watch        # Build in watch mode
 
 ### Testing
 ```bash
-npm test             # Run Jest tests
+npm test              # Run Jest tests
 npm run test:coverage # Run tests with coverage
 ```
 
@@ -664,12 +650,10 @@ Key components:
 
 ## Use Cases
 
-- **Query Analysis**: Programmatically analyze GraphQL query structure
+- **Query Analysis**: Programmatically analyse GraphQL query structure
 - **Query Transformation**: Convert between query formats
-- **Documentation Generation**: Extract field usage patterns
 - **Testing**: Validate query structures in tests
-- **Query Building**: Dynamically construct queries from JSON
-- **Schema Introspection**: Analyze client query patterns
+- **Documentation Generation**: Extract field usage patterns
 - **Caching Keys**: Generate cache keys from query structure
 
 ## Contributing

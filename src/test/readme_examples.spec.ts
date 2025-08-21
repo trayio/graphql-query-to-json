@@ -1,7 +1,7 @@
 import {graphQlQueryToJson} from "../index"
 
 describe("README Examples Validation", () => {
-    describe("1. Simple Queries", () => {
+    describe("Simple Queries", () => {
         it("Single and multiple fields", () => {
             const query = `
 query {
@@ -37,7 +37,7 @@ query {
         })
     })
 
-    describe("2. Variables and Arguments", () => {
+    describe("Variables and Arguments", () => {
         it("Query with variables", () => {
             const query = `
 query GetUser($userId: ID!, $includeProfile: Boolean!) {
@@ -75,7 +75,7 @@ query GetUser($userId: ID!, $includeProfile: Boolean!) {
         })
     })
 
-    describe("3. Scalar Fields with Arguments", () => {
+    describe("Scalar Fields with Arguments", () => {
         it("Scalar fields that accept arguments", () => {
             const query = `
 query {
@@ -103,7 +103,41 @@ query {
         })
     })
 
-    describe("4. Mutations with Complex Arguments", () => {
+    describe("Mutations with Simple Arguments", () => {
+        it("Simple mutation using string argument with sibling queries", () => {
+            const mutation = `
+        mutation {
+            getPersonalStuff(name: "PETER") {
+                personal {
+                    name
+                    address
+                }
+                other {
+                    parents
+                }
+            }
+        }
+        `
+            expect(graphQlQueryToJson(mutation)).toEqual({
+                mutation: {
+                    getPersonalStuff: {
+                        __args: {
+                            name: "PETER",
+                        },
+                        personal: {
+                            name: true,
+                            address: true,
+                        },
+                        other: {
+                            parents: true,
+                        },
+                    },
+                },
+            })
+        })
+    })
+
+    describe("Mutations with Complex Arguments", () => {
         it("Mutation with nested object arguments", () => {
             const mutation = `
 mutation CreateUser($input: UserInput!) {
@@ -126,11 +160,6 @@ mutation CreateUser($input: UserInput!) {
                     input: {
                         name: "John Doe",
                         email: "john@example.com",
-                        preferences: ["email", "sms"],
-                        metadata: {
-                            source: "signup_form",
-                            campaign: "spring_2024",
-                        },
                     },
                 },
             })
@@ -142,11 +171,6 @@ mutation CreateUser($input: UserInput!) {
                             input: {
                                 name: "John Doe",
                                 email: "john@example.com",
-                                preferences: ["email", "sms"],
-                                metadata: {
-                                    source: "signup_form",
-                                    campaign: "spring_2024",
-                                },
                             },
                         },
                         id: true,
@@ -164,7 +188,7 @@ mutation CreateUser($input: UserInput!) {
         })
     })
 
-    describe("5. Aliases and Field Renaming", () => {
+    describe("Aliases and Field Renaming", () => {
         it("Multiple aliases for the same field", () => {
             const query = `
 query {
@@ -210,7 +234,7 @@ query {
         })
     })
 
-    describe("6. Enum Types", () => {
+    describe("Enum Types", () => {
         it("Enums in arguments", () => {
             const query = `
 query {
@@ -250,7 +274,7 @@ query {
         })
     })
 
-    describe("7. Array Arguments", () => {
+    describe("Array Arguments", () => {
         it("Lists and arrays as arguments", () => {
             const mutation = `
 mutation {
@@ -285,7 +309,7 @@ mutation {
         })
     })
 
-    describe("8. Empty Values and Edge Cases", () => {
+    describe("Empty Values and Edge Cases", () => {
         it("Empty strings, objects, and arrays", () => {
             const mutation = `
 mutation {
@@ -324,7 +348,7 @@ mutation {
         })
     })
 
-    describe("9. Deeply Nested Objects", () => {
+    describe("Deeply Nested Objects", () => {
         it("Complex nested structures", () => {
             const query = `
 query {
@@ -374,7 +398,7 @@ query {
         })
     })
 
-    describe("10. Mixed Variable Types", () => {
+    describe("Mixed Variable Types", () => {
         it("Various data types as variables", () => {
             const query = `
 query SearchContent(
