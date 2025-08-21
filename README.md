@@ -577,12 +577,109 @@ const result = graphQlQueryToJson(query, {
 }
 ```
 
+### Subscriptions
+
+```ts
+// Basic subscription
+const subscription = `
+subscription {
+    messageAdded {
+        id
+        content
+        user {
+            name
+            email
+        }
+    }
+}
+`
+
+const result = graphQlQueryToJson(subscription)
+
+// Output:
+{
+  subscription: {
+    messageAdded: {
+      id: true,
+      content: true,
+      user: {
+        name: true,
+        email: true
+      }
+    }
+  }
+}
+```
+
+```ts
+// Subscription with variables and arguments
+const subscription = `
+subscription MessageSubscription($userId: ID!, $channel: String!) {
+    messageAdded(userId: $userId, channel: $channel) {
+        id
+        content
+        timestamp
+    }
+}
+`
+
+const result = graphQlQueryToJson(subscription, {
+    variables: {
+        userId: "123",
+        channel: "general"
+    }
+})
+
+// Output:
+{
+  subscription: {
+    messageAdded: {
+      __args: {
+        userId: "123",
+        channel: "general"
+      },
+      id: true,
+      content: true,
+      timestamp: true
+    }
+  }
+}
+```
+
+```ts
+// Subscription with aliases and enums
+const subscription = `
+subscription {
+    latestMessage: messageAdded(channel: PUBLIC) {
+        id
+        content
+    }
+}
+`
+
+const result = graphQlQueryToJson(subscription)
+
+// Output:
+{
+  subscription: {
+    latestMessage: {
+      __aliasFor: "messageAdded",
+      __args: {
+        channel: { "value": "PUBLIC" }
+      },
+      id: true,
+      content: true
+    }
+  }
+}
+```
+
 ## API Reference
 
 ### `graphQlQueryToJson(query, options?)`
 
 **Parameters:**
-- `query` (string): The GraphQL query or mutation string
+- `query` (string): The GraphQL query, mutation, or subscription string
 - `options` (object, optional):
   - `variables` (object): Variables referenced in the query
 
@@ -592,6 +689,65 @@ const result = graphQlQueryToJson(query, {
 - Error if query syntax is invalid
 - Error if variables are referenced but not provided
 - Error if query contains multiple operations
+
+## Limitations
+
+While the library supports the core GraphQL features, there are some limitations:
+
+### Fragment Support
+- **Named Fragments**: Not supported due to multiple definition restriction
+- **Inline Fragments**: Not supported (e.g., `... on TypeName`)
+
+```ts
+// ❌ This will throw an error
+const queryWithFragment = `
+query {
+    user {
+        ...UserFields
+    }
+}
+
+fragment UserFields on User {
+    id
+    name
+}
+`
+// Throws: "The parsed query has more than one set of definitions"
+
+// ❌ This will cause a runtime error
+const queryWithInlineFragment = `
+query {
+    search {
+        ... on User {
+            name
+        }
+        ... on Post {
+            title
+        }
+    }
+}
+`
+// Causes: Cannot read properties of undefined
+```
+
+### Directives
+- **Directive Handling**: Directives like `@include`, `@skip` are parsed but ignored
+- The library focuses on structure extraction rather than directive execution
+
+```ts
+// ✅ This works but directives are ignored
+const queryWithDirective = `
+query($includeEmail: Boolean!) {
+    user {
+        name
+        email @include(if: $includeEmail)
+    }
+}
+`
+// The @include directive won't affect the output structure
+```
+
+These limitations apply equally to queries, mutations, and subscriptions since they all use the same AST processing logic.
 
 ## TypeScript Support
 

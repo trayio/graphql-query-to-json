@@ -463,6 +463,260 @@ describe("Mutations", () => {
     })
 })
 
+describe("Subscriptions", () => {
+    it("Simple subscription", () => {
+        const subscription = `
+            subscription {
+                messageAdded {
+                    id
+                    content
+                    user {
+                        name
+                        email
+                    }
+                }
+            }
+        `
+        expect(graphQlQueryToJson(subscription)).toEqual({
+            subscription: {
+                messageAdded: {
+                    id: true,
+                    content: true,
+                    user: {
+                        name: true,
+                        email: true,
+                    },
+                },
+            },
+        })
+    })
+
+    it("Subscription with arguments", () => {
+        const subscription = `
+            subscription MessageSubscription($userId: ID!) {
+                messageAdded(userId: $userId) {
+                    id
+                    content
+                    timestamp
+                }
+            }
+        `
+        const result = graphQlQueryToJson(subscription, {
+            variables: {
+                userId: "123",
+            },
+        })
+        expect(result).toEqual({
+            subscription: {
+                messageAdded: {
+                    __args: {
+                        userId: "123",
+                    },
+                    id: true,
+                    content: true,
+                    timestamp: true,
+                },
+            },
+        })
+    })
+
+    it("Subscription with alias", () => {
+        const subscription = `
+            subscription {
+                latestMessage: messageAdded {
+                    id
+                    content
+                }
+            }
+        `
+        expect(graphQlQueryToJson(subscription)).toEqual({
+            subscription: {
+                latestMessage: {
+                    __aliasFor: "messageAdded",
+                    id: true,
+                    content: true,
+                },
+            },
+        })
+    })
+
+    it("Subscription with enum arguments", () => {
+        const subscription = `
+            subscription {
+                messageAdded(channel: PUBLIC, priority: HIGH) {
+                    id
+                    content
+                }
+            }
+        `
+        expect(graphQlQueryToJson(subscription)).toEqual({
+            subscription: {
+                messageAdded: {
+                    __args: {
+                        channel: new EnumType("PUBLIC"),
+                        priority: new EnumType("HIGH"),
+                    },
+                    id: true,
+                    content: true,
+                },
+            },
+        })
+    })
+
+    it("Subscription with scalar field with arguments", () => {
+        const subscription = `
+            subscription {
+                messageCount(channel: "general", since: "2024-01-01")
+            }
+        `
+        expect(graphQlQueryToJson(subscription)).toEqual({
+            subscription: {
+                messageCount: {
+                    __args: {
+                        channel: "general",
+                        since: "2024-01-01",
+                    },
+                },
+            },
+        })
+    })
+
+    it("Subscription with nested objects and complex arguments", () => {
+        const subscription = `
+            subscription NotificationSubscription($input: NotificationInput!) {
+                notificationAdded(input: $input) {
+                    id
+                    message
+                    user {
+                        id
+                        name
+                        profile {
+                            avatar
+                        }
+                    }
+                    metadata {
+                        priority
+                        tags
+                    }
+                }
+            }
+        `
+        const result = graphQlQueryToJson(subscription, {
+            variables: {
+                input: {
+                    userId: "123",
+                    channels: ["email", "push"],
+                    filters: {
+                        priority: "high",
+                        categories: ["system", "user"],
+                    },
+                },
+            },
+        })
+        expect(result).toEqual({
+            subscription: {
+                notificationAdded: {
+                    __args: {
+                        input: {
+                            userId: "123",
+                            channels: ["email", "push"],
+                            filters: {
+                                priority: "high",
+                                categories: ["system", "user"],
+                            },
+                        },
+                    },
+                    id: true,
+                    message: true,
+                    user: {
+                        id: true,
+                        name: true,
+                        profile: {
+                            avatar: true,
+                        },
+                    },
+                    metadata: {
+                        priority: true,
+                        tags: true,
+                    },
+                },
+            },
+        })
+    })
+
+    it("Subscription with directives (directives are ignored)", () => {
+        const subscription = `
+            subscription MessageSubscription($includeUser: Boolean!) {
+                messageAdded {
+                    id
+                    content
+                    user @include(if: $includeUser) {
+                        name
+                    }
+                }
+            }
+        `
+        const result = graphQlQueryToJson(subscription, {
+            variables: {
+                includeUser: true,
+            },
+        })
+        expect(result).toEqual({
+            subscription: {
+                messageAdded: {
+                    id: true,
+                    content: true,
+                    user: {
+                        name: true,
+                    },
+                },
+            },
+        })
+    })
+
+    it("Should throw error for subscription with named fragments", () => {
+        const subscriptionWithFragment = `
+            subscription {
+                messageAdded {
+                    ...MessageFields
+                }
+            }
+
+            fragment MessageFields on Message {
+                id
+                content
+                user {
+                    name
+                }
+            }
+        `
+        expect(() => {
+            graphQlQueryToJson(subscriptionWithFragment)
+        }).toThrow("The parsed query has more than one set of definitions")
+    })
+
+    it("Should throw error for subscription with inline fragments", () => {
+        const subscriptionWithInlineFragment = `
+            subscription {
+                messageAdded {
+                    id
+                    content
+                    ... on TextMessage {
+                        text
+                    }
+                    ... on ImageMessage {
+                        imageUrl
+                        caption
+                    }
+                }
+            }
+        `
+        expect(() => {
+            graphQlQueryToJson(subscriptionWithInlineFragment)
+        }).toThrow()
+    })
+})
+
 describe("Aliases", () => {
     it("Simple example with aliases", () => {
         const query = `

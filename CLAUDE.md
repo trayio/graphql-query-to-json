@@ -25,7 +25,7 @@ The main `graphQlQueryToJson` function:
 
 ### Key Processing Functions
 - `getSelections()` - Processes selection sets recursively
-- `getArguments()` - Handles argument processing including variables and enum types  
+- `getArguments()` - Handles argument processing including variables and enum types
 - `replaceVariables()` - Substitutes variable placeholders with actual values
 - `checkEachVariableInQueryIsDefined()` - Validates all query variables have values
 
