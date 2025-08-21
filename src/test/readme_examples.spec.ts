@@ -465,7 +465,7 @@ query SearchContent(
         })
     })
 
-    describe("11. Subscriptions", () => {
+    describe("Subscriptions", () => {
         it("Basic subscription", () => {
             const subscription = `
 subscription {

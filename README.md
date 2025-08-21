@@ -577,7 +577,7 @@ const result = graphQlQueryToJson(query, {
 }
 ```
 
-### 11. Subscriptions
+### Subscriptions
 
 ```ts
 // Basic subscription
