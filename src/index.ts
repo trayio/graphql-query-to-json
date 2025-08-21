@@ -106,8 +106,6 @@ const getArguments = (args) => {
         } else if (arg.value.kind === "Variable") {
             argsObj[arg.name.value] =
                 `${arg.value.name.value}${isVariableDropinConst}`
-        } else if (arg.selectionSet) {
-            argsObj[arg.name.value] = getSelections(arg.selectionSet.selections)
         } else if (arg.value.kind === "EnumValue") {
             argsObj[arg.name.value] = new EnumType(arg.value.value)
         } else if (arg.value.kind === "IntValue") {
