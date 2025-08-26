@@ -12,7 +12,7 @@ A TypeScript library that converts GraphQL query and mutation strings into struc
 
 - ✅ **Full GraphQL Support**: Queries, mutations and subscriptions
 - ✅ **Variable Handling**: Complete variable substitution with validation
-- ✅ **Arguments**: All argument types (strings, integers, objects, arrays, enums)
+- ✅ **Arguments**: All argument types (strings, integers, floats, objects, arrays, enums)
 - ✅ **Aliases**: Field aliasing with metadata preservation
 - ✅ **Type Safety**: Full TypeScript support with comprehensive type definitions
 - ✅ **Error Handling**: Descriptive error messages for malformed queries and missing variables
@@ -508,22 +508,84 @@ const result = graphQlQueryToJson(query)
 }
 ```
 
+### Float Arguments and Numeric Types
+
+```ts
+// Float and numeric argument support
+const query = `
+query GetProducts {
+    products(
+        minRating: 4.5,
+        maxPrice: 99.99,
+        discount: -10.5,
+        threshold: 0.001,
+        scientific: 2.5e3
+    ) {
+        name
+        rating
+        price
+    }
+    analytics(
+        coordinates: {
+            lat: 40.7128,
+            lng: -74.006
+        },
+        mixed: [1, 2.5, 3, 4.75]
+    ) {
+        data
+    }
+}
+`
+
+const result = graphQlQueryToJson(query)
+
+// Output:
+{
+  query: {
+    products: {
+      __args: {
+        minRating: 4.5,           // ✅ Float as number
+        maxPrice: 99.99,          // ✅ Float as number  
+        discount: -10.5,          // ✅ Negative float
+        threshold: 0.001,         // ✅ Small decimal
+        scientific: 2500          // ✅ Scientific notation (2.5e3)
+      },
+      name: true,
+      rating: true,
+      price: true
+    },
+    analytics: {
+      __args: {
+        coordinates: {
+          lat: 40.7128,           // ✅ Nested floats
+          lng: -74.006
+        },
+        mixed: ["1", "2.5", "3", "4.75"]  // Arrays preserve strings
+      },
+      data: true
+    }
+  }
+}
+```
+
 ### Mixed Variable Types
 
 ```ts
-// Various data types as variables
+// Various data types as variables including floats
 const query = `
 query SearchContent(
     $text: String!,
     $limit: Int!,
-    $offset: Int,
+    $rating: Float!,
+    $price: Float,
     $filters: FilterInput!,
     $includeArchived: Boolean
 ) {
     search(
         query: $text,
         first: $limit,
-        skip: $offset,
+        minRating: $rating,
+        maxPrice: $price,
         filters: $filters,
         archived: $includeArchived
     ) {
@@ -541,7 +603,8 @@ const result = graphQlQueryToJson(query, {
     variables: {
         text: "GraphQL tutorial",
         limit: 10,
-        offset: 0,
+        rating: 4.8,              // ✅ Float variable
+        price: 29.99,             // ✅ Float variable
         filters: {
             category: "tutorial",
             difficulty: "beginner",
@@ -558,7 +621,8 @@ const result = graphQlQueryToJson(query, {
       __args: {
         query: "GraphQL tutorial",
         first: 10,
-        skip: 0,
+        minRating: 4.8,           // ✅ Float from variable
+        maxPrice: 29.99,          // ✅ Float from variable
         filters: {
           category: "tutorial",
           difficulty: "beginner",

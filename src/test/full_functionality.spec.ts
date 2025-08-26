@@ -978,7 +978,7 @@ describe("Edge Cases and Additional Coverage", () => {
         })
     })
 
-    it("Handles float arguments as strings", () => {
+    it("Handles float arguments as numbers", () => {
         const query = `
             query {
                 viewer {
@@ -993,10 +993,233 @@ describe("Edge Cases and Additional Coverage", () => {
                 viewer: {
                     products: {
                         __args: {
-                            rating: "4.5",
-                            price: "99.99",
+                            rating: 4.5,
+                            price: 99.99,
                         },
                         name: true,
+                    },
+                },
+            },
+        })
+    })
+
+    it("Handles mixed int and float arguments", () => {
+        const query = `
+            query {
+                viewer {
+                    analytics(count: 100, threshold: 2.5, limit: 50, percentage: 87.3) {
+                        data
+                    }
+                }
+            }
+        `
+        expect(graphQlQueryToJson(query)).toEqual({
+            query: {
+                viewer: {
+                    analytics: {
+                        __args: {
+                            count: 100,
+                            threshold: 2.5,
+                            limit: 50,
+                            percentage: 87.3,
+                        },
+                        data: true,
+                    },
+                },
+            },
+        })
+    })
+
+    it("Handles negative float arguments", () => {
+        const query = `
+            query {
+                viewer {
+                    adjustments(offset: -12.5, delta: -0.001) {
+                        result
+                    }
+                }
+            }
+        `
+        expect(graphQlQueryToJson(query)).toEqual({
+            query: {
+                viewer: {
+                    adjustments: {
+                        __args: {
+                            offset: -12.5,
+                            delta: -0.001,
+                        },
+                        result: true,
+                    },
+                },
+            },
+        })
+    })
+
+    it("Handles zero and decimal edge cases", () => {
+        const query = `
+            query {
+                viewer {
+                    measurements(zero: 0.0, decimal: 0.5, trailing: 3.0) {
+                        values
+                    }
+                }
+            }
+        `
+        expect(graphQlQueryToJson(query)).toEqual({
+            query: {
+                viewer: {
+                    measurements: {
+                        __args: {
+                            zero: 0.0,
+                            decimal: 0.5,
+                            trailing: 3.0,
+                        },
+                        values: true,
+                    },
+                },
+            },
+        })
+    })
+
+    it("Handles floats in nested object arguments", () => {
+        const query = `
+            query {
+                viewer {
+                    complexSearch(criteria: {
+                        score: 8.5,
+                        weight: 1.2,
+                        coordinates: {
+                            lat: 40.7128,
+                            lng: -74.0060
+                        }
+                    }) {
+                        results
+                    }
+                }
+            }
+        `
+        expect(graphQlQueryToJson(query)).toEqual({
+            query: {
+                viewer: {
+                    complexSearch: {
+                        __args: {
+                            criteria: {
+                                score: 8.5,
+                                weight: 1.2,
+                                coordinates: {
+                                    lat: 40.7128,
+                                    lng: -74.006,
+                                },
+                            },
+                        },
+                        results: true,
+                    },
+                },
+            },
+        })
+    })
+
+    it("Handles floats in array arguments", () => {
+        const query = `
+            query {
+                viewer {
+                    dataPoints(values: [1.1, 2.2, 3.3, 4.4]) {
+                        summary
+                    }
+                }
+            }
+        `
+        expect(graphQlQueryToJson(query)).toEqual({
+            query: {
+                viewer: {
+                    dataPoints: {
+                        __args: {
+                            values: ["1.1", "2.2", "3.3", "4.4"],
+                        },
+                        summary: true,
+                    },
+                },
+            },
+        })
+    })
+
+    it("Handles mixed type arrays with floats", () => {
+        const query = `
+            query {
+                viewer {
+                    mixedData(values: [1, 2.5, 3, 4.75]) {
+                        result
+                    }
+                }
+            }
+        `
+        expect(graphQlQueryToJson(query)).toEqual({
+            query: {
+                viewer: {
+                    mixedData: {
+                        __args: {
+                            values: ["1", "2.5", "3", "4.75"],
+                        },
+                        result: true,
+                    },
+                },
+            },
+        })
+    })
+
+    it("Handles float variables in arguments", () => {
+        const query = `
+            query TestFloatVars($price: Float!, $discount: Float) {
+                viewer {
+                    products(maxPrice: $price, discountRate: $discount) {
+                        name
+                        finalPrice
+                    }
+                }
+            }
+        `
+        const result = graphQlQueryToJson(query, {
+            variables: {
+                price: 199.99,
+                discount: 0.15,
+            },
+        })
+        expect(result).toEqual({
+            query: {
+                viewer: {
+                    products: {
+                        __args: {
+                            maxPrice: 199.99,
+                            discountRate: 0.15,
+                        },
+                        name: true,
+                        finalPrice: true,
+                    },
+                },
+            },
+        })
+    })
+
+    it("Handles scientific notation floats", () => {
+        const query = `
+            query {
+                viewer {
+                    scientificData(small: 1e-5, large: 2.5e3, negative: -1.5e-2) {
+                        results
+                    }
+                }
+            }
+        `
+        expect(graphQlQueryToJson(query)).toEqual({
+            query: {
+                viewer: {
+                    scientificData: {
+                        __args: {
+                            small: 1e-5,
+                            large: 2.5e3,
+                            negative: -1.5e-2,
+                        },
+                        results: true,
                     },
                 },
             },

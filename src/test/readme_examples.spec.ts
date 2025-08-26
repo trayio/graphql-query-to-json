@@ -398,7 +398,134 @@ query {
         })
     })
 
+    describe("Float Arguments and Numeric Types", () => {
+        it("Float and numeric argument support", () => {
+            const query = `
+query GetProducts {
+    products(
+        minRating: 4.5,
+        maxPrice: 99.99,
+        discount: -10.5,
+        threshold: 0.001,
+        scientific: 2.5e3
+    ) {
+        name
+        rating
+        price
+    }
+    analytics(
+        coordinates: {
+            lat: 40.7128,
+            lng: -74.006
+        },
+        mixed: [1, 2.5, 3, 4.75]
+    ) {
+        data
+    }
+}
+`
+
+            const result = graphQlQueryToJson(query)
+
+            expect(result).toEqual({
+                query: {
+                    products: {
+                        __args: {
+                            minRating: 4.5,
+                            maxPrice: 99.99,
+                            discount: -10.5,
+                            threshold: 0.001,
+                            scientific: 2500,
+                        },
+                        name: true,
+                        rating: true,
+                        price: true,
+                    },
+                    analytics: {
+                        __args: {
+                            coordinates: {
+                                lat: 40.7128,
+                                lng: -74.006,
+                            },
+                            mixed: ["1", "2.5", "3", "4.75"],
+                        },
+                        data: true,
+                    },
+                },
+            })
+        })
+    })
+
     describe("Mixed Variable Types", () => {
+        it("Various data types as variables including floats", () => {
+            const query = `
+query SearchContent(
+    $text: String!,
+    $limit: Int!,
+    $rating: Float!,
+    $price: Float,
+    $filters: FilterInput!,
+    $includeArchived: Boolean
+) {
+    search(
+        query: $text,
+        first: $limit,
+        minRating: $rating,
+        maxPrice: $price,
+        filters: $filters,
+        archived: $includeArchived
+    ) {
+        results {
+            id
+            title
+            excerpt
+        }
+        totalCount
+    }
+}
+`
+
+            const result = graphQlQueryToJson(query, {
+                variables: {
+                    text: "GraphQL tutorial",
+                    limit: 10,
+                    rating: 4.8,
+                    price: 29.99,
+                    filters: {
+                        category: "tutorial",
+                        difficulty: "beginner",
+                        tags: ["graphql", "api"],
+                    },
+                    includeArchived: false,
+                },
+            })
+
+            expect(result).toEqual({
+                query: {
+                    search: {
+                        __args: {
+                            query: "GraphQL tutorial",
+                            first: 10,
+                            minRating: 4.8,
+                            maxPrice: 29.99,
+                            filters: {
+                                category: "tutorial",
+                                difficulty: "beginner",
+                                tags: ["graphql", "api"],
+                            },
+                            archived: false,
+                        },
+                        results: {
+                            id: true,
+                            title: true,
+                            excerpt: true,
+                        },
+                        totalCount: true,
+                    },
+                },
+            })
+        })
+
         it("Various data types as variables", () => {
             const query = `
 query SearchContent(
