@@ -464,4 +464,95 @@ query SearchContent(
             })
         })
     })
+
+    describe("Subscriptions", () => {
+        it("Basic subscription", () => {
+            const subscription = `
+subscription {
+    messageAdded {
+        id
+        content
+        user {
+            name
+            email
+        }
+    }
+}
+`
+
+            const result = graphQlQueryToJson(subscription)
+
+            expect(result).toEqual({
+                subscription: {
+                    messageAdded: {
+                        id: true,
+                        content: true,
+                        user: {
+                            name: true,
+                            email: true,
+                        },
+                    },
+                },
+            })
+        })
+
+        it("Subscription with variables and arguments", () => {
+            const subscription = `
+subscription MessageSubscription($userId: ID!, $channel: String!) {
+    messageAdded(userId: $userId, channel: $channel) {
+        id
+        content
+        timestamp
+    }
+}
+`
+
+            const result = graphQlQueryToJson(subscription, {
+                variables: {
+                    userId: "123",
+                    channel: "general",
+                },
+            })
+
+            expect(result).toEqual({
+                subscription: {
+                    messageAdded: {
+                        __args: {
+                            userId: "123",
+                            channel: "general",
+                        },
+                        id: true,
+                        content: true,
+                        timestamp: true,
+                    },
+                },
+            })
+        })
+
+        it("Subscription with aliases and enums", () => {
+            const subscription = `
+subscription {
+    latestMessage: messageAdded(channel: PUBLIC) {
+        id
+        content
+    }
+}
+`
+
+            const result = graphQlQueryToJson(subscription)
+
+            expect(result).toEqual({
+                subscription: {
+                    latestMessage: {
+                        __aliasFor: "messageAdded",
+                        __args: {
+                            channel: {value: "PUBLIC"},
+                        },
+                        id: true,
+                        content: true,
+                    },
+                },
+            })
+        })
+    })
 })
