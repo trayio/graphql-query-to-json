@@ -63,6 +63,3 @@ The library processes GraphQL Abstract Syntax Trees (AST) from the `graphql` lib
 - Validates that all variables referenced in query are provided
 - Throws descriptive errors for malformed GraphQL syntax
 - Prevents multiple operations in single query string
-
-### Coverage Limitations
-Line 111 (`argsObj[arg.name.value] = getSelections(arg.selectionSet.selections)`) handles arguments with selection sets, but this is not valid GraphQL syntax and appears to be unreachable defensive code.
