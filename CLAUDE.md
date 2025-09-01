@@ -37,7 +37,7 @@ The main `graphQlQueryToJson` function:
 ### Testing
 - Comprehensive Jest test suite in `src/test/full_functionality.spec.ts`
 - README examples validation tests in `src/test/readme_examples.spec.ts`
-- Tests cover queries, mutations, subscriptions, aliases, enums, variables, scalar fields with arguments, float arguments (including edge cases), and error cases
+- Tests cover queries, mutations, subscriptions, aliases, enums, variables, scalar fields with arguments, float arguments (including edge cases), inline fragments, and error cases
 - Tests run against compiled dist/ files, so always build before testing
 - To run a single test file: `npm test -- --testNamePattern="specific test name"`
 - Current coverage: 99% statements, 98% branches (line 111 in index.ts is unreachable dead code)
@@ -48,6 +48,7 @@ The main `graphQlQueryToJson` function:
 The library processes GraphQL Abstract Syntax Trees (AST) from the `graphql` library. Key AST node types handled:
 - `OperationDefinition` - Query/mutation/subscription operations
 - `Field` - Individual field selections with optional arguments and aliases
+- `InlineFragment` - Inline fragments for conditional type-based field selection
 - `Argument` - Field arguments with various value types (string, int, float, enum, object, list, variable)
 - `SelectionSet` - Groups of field selections
 
@@ -58,6 +59,7 @@ The library processes GraphQL Abstract Syntax Trees (AST) from the `graphql` lib
 - **Aliases**: Aliased fields get `__aliasFor` metadata: `alias: { __aliasFor: "originalField" }`
 - **Variables**: Replaced with actual values using `replaceVariables()` function
 - **Enums**: Wrapped in `EnumType` objects from json-to-graphql-query library (except in arrays where they remain strings)
+- **Inline Fragments**: Single fragment becomes `__on: { __typeName: "TypeName", ...fields }`, multiple fragments become `__on: [{ __typeName: "Type1", ...}, ...]`
 
 ### Error Handling
 - Validates that all variables referenced in query are provided

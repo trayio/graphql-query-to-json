@@ -11,6 +11,7 @@ A TypeScript library that converts GraphQL query and mutation strings into struc
 ## Features
 
 - ✅ **Full GraphQL Support**: Queries, mutations and subscriptions
+- ✅ **Inline Fragments**: Complete support for conditional type-based field selection
 - ✅ **Variable Handling**: Complete variable substitution with validation
 - ✅ **Arguments**: All argument types (strings, integers, floats, objects, arrays, enums)
 - ✅ **Aliases**: Field aliasing with metadata preservation
@@ -83,6 +84,7 @@ The library follows predictable transformation patterns:
 | **Aliases** | Field renaming + `__aliasFor` | `renamed: user` → `renamed: { __aliasFor: "user" }` |
 | **Variables** | Substituted values | `$userId` → actual variable value |
 | **Enums** | `EnumType` wrapper | `status: ACTIVE` → `status: { "value": "ACTIVE" }` |
+| **Inline Fragments** | `__on` property | `... on User { name }` → `__on: { __typeName: "User", name: true }` |
 
 ## Comprehensive Examples
 
@@ -568,6 +570,134 @@ const result = graphQlQueryToJson(query)
 }
 ```
 
+### Inline Fragments
+
+```ts
+// Single inline fragment
+const query = `
+query {
+    posts {
+        title
+        ... on TextPost {
+            content
+            wordCount
+        }
+    }
+}
+`
+
+const result = graphQlQueryToJson(query)
+
+// Output:
+{
+  query: {
+    posts: {
+      title: true,
+      __on: {
+        __typeName: "TextPost",
+        content: true,
+        wordCount: true
+      }
+    }
+  }
+}
+```
+
+```ts
+// Multiple inline fragments
+const query = `
+query {
+    media {
+        ... on TextPost {
+            content
+            author {
+                name
+            }
+        }
+        ... on ImagePost {
+            imageUrl
+            altText
+        }
+        ... on VideoPost {
+            videoUrl
+            duration
+        }
+    }
+}
+`
+
+const result = graphQlQueryToJson(query)
+
+// Output:
+{
+  query: {
+    media: {
+      __on: [
+        {
+          __typeName: "TextPost",
+          content: true,
+          author: {
+            name: true
+          }
+        },
+        {
+          __typeName: "ImagePost",
+          imageUrl: true,
+          altText: true
+        },
+        {
+          __typeName: "VideoPost", 
+          videoUrl: true,
+          duration: true
+        }
+      ]
+    }
+  }
+}
+```
+
+```ts
+// Inline fragments with arguments and variables
+const query = `
+query GetPosts($limit: Int!) {
+    posts {
+        title
+        ... on TextPost {
+            comments(limit: $limit) {
+                text
+                author {
+                    name
+                }
+            }
+        }
+    }
+}
+`
+
+const result = graphQlQueryToJson(query, {
+    variables: { limit: 5 }
+})
+
+// Output:
+{
+  query: {
+    posts: {
+      title: true,
+      __on: {
+        __typeName: "TextPost",
+        comments: {
+          __args: { limit: 5 },
+          text: true,
+          author: {
+            name: true
+          }
+        }
+      }
+    }
+  }
+}
+```
+
 ### Subscriptions
 
 ```ts
@@ -687,10 +817,10 @@ While the library supports the core GraphQL features, there are some limitations
 
 ### Fragment Support
 - **Named Fragments**: Not supported due to multiple definition restriction
-- **Inline Fragments**: Not supported (e.g., `... on TypeName`)
+- **Inline Fragments**: ✅ **Fully Supported** (e.g., `... on TypeName`)
 
 ```ts
-// ❌ This will throw an error
+// ❌ Named fragments still throw an error
 const queryWithFragment = `
 query {
     user {
@@ -705,7 +835,7 @@ fragment UserFields on User {
 `
 // Throws: "The parsed query has more than one set of definitions"
 
-// ❌ This will cause a runtime error
+// ✅ Inline fragments work perfectly
 const queryWithInlineFragment = `
 query {
     search {
@@ -718,7 +848,7 @@ query {
     }
 }
 `
-// Causes: Cannot read properties of undefined
+// Output: { query: { search: { __on: [...] } } }
 ```
 
 ### Directives

@@ -615,4 +615,126 @@ subscription {
             })
         })
     })
+
+    describe("Inline Fragments", () => {
+        it("Single inline fragment", () => {
+            const query = `
+query {
+    posts {
+        title
+        ... on TextPost {
+            content
+            wordCount
+        }
+    }
+}
+`
+
+            const result = graphQlQueryToJson(query)
+
+            expect(result).toEqual({
+                query: {
+                    posts: {
+                        title: true,
+                        __on: {
+                            __typeName: "TextPost",
+                            content: true,
+                            wordCount: true,
+                        },
+                    },
+                },
+            })
+        })
+
+        it("Multiple inline fragments", () => {
+            const query = `
+query {
+    media {
+        ... on TextPost {
+            content
+            author {
+                name
+            }
+        }
+        ... on ImagePost {
+            imageUrl
+            altText
+        }
+        ... on VideoPost {
+            videoUrl
+            duration
+        }
+    }
+}
+`
+
+            const result = graphQlQueryToJson(query)
+
+            expect(result).toEqual({
+                query: {
+                    media: {
+                        __on: [
+                            {
+                                __typeName: "TextPost",
+                                content: true,
+                                author: {
+                                    name: true,
+                                },
+                            },
+                            {
+                                __typeName: "ImagePost",
+                                imageUrl: true,
+                                altText: true,
+                            },
+                            {
+                                __typeName: "VideoPost",
+                                videoUrl: true,
+                                duration: true,
+                            },
+                        ],
+                    },
+                },
+            })
+        })
+
+        it("Inline fragments with arguments and variables", () => {
+            const query = `
+query GetPosts($limit: Int!) {
+    posts {
+        title
+        ... on TextPost {
+            comments(limit: $limit) {
+                text
+                author {
+                    name
+                }
+            }
+        }
+    }
+}
+`
+
+            const result = graphQlQueryToJson(query, {
+                variables: {limit: 5},
+            })
+
+            expect(result).toEqual({
+                query: {
+                    posts: {
+                        title: true,
+                        __on: {
+                            __typeName: "TextPost",
+                            comments: {
+                                __args: {limit: 5},
+                                text: true,
+                                author: {
+                                    name: true,
+                                },
+                            },
+                        },
+                    },
+                },
+            })
+        })
+    })
 })
