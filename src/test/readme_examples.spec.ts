@@ -398,64 +398,6 @@ query {
         })
     })
 
-    describe("Float Arguments and Numeric Types", () => {
-        it("Float and numeric argument support", () => {
-            const query = `
-query GetProducts {
-    products(
-        minRating: 4.5,
-        maxPrice: 99.99,
-        discount: -10.5,
-        threshold: 0.001,
-        scientific: 2.5e3
-    ) {
-        name
-        rating
-        price
-    }
-    analytics(
-        coordinates: {
-            lat: 40.7128,
-            lng: -74.006
-        },
-        mixed: [1, 2.5, 3, 4.75]
-    ) {
-        data
-    }
-}
-`
-
-            const result = graphQlQueryToJson(query)
-
-            expect(result).toEqual({
-                query: {
-                    products: {
-                        __args: {
-                            minRating: 4.5,
-                            maxPrice: 99.99,
-                            discount: -10.5,
-                            threshold: 0.001,
-                            scientific: 2500,
-                        },
-                        name: true,
-                        rating: true,
-                        price: true,
-                    },
-                    analytics: {
-                        __args: {
-                            coordinates: {
-                                lat: 40.7128,
-                                lng: -74.006,
-                            },
-                            mixed: ["1", "2.5", "3", "4.75"],
-                        },
-                        data: true,
-                    },
-                },
-            })
-        })
-    })
-
     describe("Mixed Variable Types", () => {
         it("Various data types as variables including floats", () => {
             const query = `
@@ -526,66 +468,57 @@ query SearchContent(
             })
         })
 
-        it("Various data types as variables", () => {
+        it("Float arguments and numeric types", () => {
             const query = `
-query SearchContent(
-    $text: String!,
-    $limit: Int!,
-    $offset: Int,
-    $filters: FilterInput!,
-    $includeArchived: Boolean
-) {
-    search(
-        query: $text,
-        first: $limit,
-        skip: $offset,
-        filters: $filters,
-        archived: $includeArchived
+query GetProducts {
+    products(
+        minRating: 4.5,
+        maxPrice: 99.99,
+        discount: -10.5,
+        threshold: 0.001,
+        scientific: 2.5e3
     ) {
-        results {
-            id
-            title
-            excerpt
-        }
-        totalCount
+        name
+        rating
+        price
+    }
+    analytics(
+        coordinates: {
+            lat: 40.7128,
+            lng: -74.006
+        },
+        mixed: [1, 2.5, 3, 4.75]
+    ) {
+        data
     }
 }
 `
 
-            const result = graphQlQueryToJson(query, {
-                variables: {
-                    text: "GraphQL tutorial",
-                    limit: 10,
-                    offset: 0,
-                    filters: {
-                        category: "tutorial",
-                        difficulty: "beginner",
-                        tags: ["graphql", "api"],
-                    },
-                    includeArchived: false,
-                },
-            })
+            const result = graphQlQueryToJson(query)
 
             expect(result).toEqual({
                 query: {
-                    search: {
+                    products: {
                         __args: {
-                            query: "GraphQL tutorial",
-                            first: 10,
-                            skip: 0,
-                            filters: {
-                                category: "tutorial",
-                                difficulty: "beginner",
-                                tags: ["graphql", "api"],
+                            minRating: 4.5,
+                            maxPrice: 99.99,
+                            discount: -10.5,
+                            threshold: 0.001,
+                            scientific: 2500,
+                        },
+                        name: true,
+                        rating: true,
+                        price: true,
+                    },
+                    analytics: {
+                        __args: {
+                            coordinates: {
+                                lat: 40.7128,
+                                lng: -74.006,
                             },
-                            archived: false,
+                            mixed: ["1", "2.5", "3", "4.75"],
                         },
-                        results: {
-                            id: true,
-                            title: true,
-                            excerpt: true,
-                        },
-                        totalCount: true,
+                        data: true,
                     },
                 },
             })

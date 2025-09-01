@@ -508,10 +508,10 @@ const result = graphQlQueryToJson(query)
 }
 ```
 
-### Float Arguments and Numeric Types
+### Mixed Variable Types
 
 ```ts
-// Float and numeric argument support
+// Float arguments and numeric types
 const query = `
 query GetProducts {
     products(
@@ -563,79 +563,6 @@ const result = graphQlQueryToJson(query)
         mixed: ["1", "2.5", "3", "4.75"]  // Arrays preserve strings
       },
       data: true
-    }
-  }
-}
-```
-
-### Mixed Variable Types
-
-```ts
-// Various data types as variables including floats
-const query = `
-query SearchContent(
-    $text: String!,
-    $limit: Int!,
-    $rating: Float!,
-    $price: Float,
-    $filters: FilterInput!,
-    $includeArchived: Boolean
-) {
-    search(
-        query: $text,
-        first: $limit,
-        minRating: $rating,
-        maxPrice: $price,
-        filters: $filters,
-        archived: $includeArchived
-    ) {
-        results {
-            id
-            title
-            excerpt
-        }
-        totalCount
-    }
-}
-`
-
-const result = graphQlQueryToJson(query, {
-    variables: {
-        text: "GraphQL tutorial",
-        limit: 10,
-        rating: 4.8,              // ✅ Float variable
-        price: 29.99,             // ✅ Float variable
-        filters: {
-            category: "tutorial",
-            difficulty: "beginner",
-            tags: ["graphql", "api"]
-        },
-        includeArchived: false
-    }
-})
-
-// Output:
-{
-  query: {
-    search: {
-      __args: {
-        query: "GraphQL tutorial",
-        first: 10,
-        minRating: 4.8,           // ✅ Float from variable
-        maxPrice: 29.99,          // ✅ Float from variable
-        filters: {
-          category: "tutorial",
-          difficulty: "beginner",
-          tags: ["graphql", "api"]
-        },
-        archived: false
-      },
-      results: {
-        id: true,
-        title: true,
-        excerpt: true
-      },
-      totalCount: true
     }
   }
 }
