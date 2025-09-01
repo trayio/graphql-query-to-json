@@ -12,7 +12,7 @@ A TypeScript library that converts GraphQL query and mutation strings into struc
 
 - ✅ **Full GraphQL Support**: Queries, mutations and subscriptions
 - ✅ **Variable Handling**: Complete variable substitution with validation
-- ✅ **Arguments**: All argument types (strings, integers, objects, arrays, enums)
+- ✅ **Arguments**: All argument types (strings, integers, floats, objects, arrays, enums)
 - ✅ **Aliases**: Field aliasing with metadata preservation
 - ✅ **Type Safety**: Full TypeScript support with comprehensive type definitions
 - ✅ **Error Handling**: Descriptive error messages for malformed queries and missing variables
@@ -511,67 +511,58 @@ const result = graphQlQueryToJson(query)
 ### Mixed Variable Types
 
 ```ts
-// Various data types as variables
+// Float arguments and numeric types
 const query = `
-query SearchContent(
-    $text: String!,
-    $limit: Int!,
-    $offset: Int,
-    $filters: FilterInput!,
-    $includeArchived: Boolean
-) {
-    search(
-        query: $text,
-        first: $limit,
-        skip: $offset,
-        filters: $filters,
-        archived: $includeArchived
+query GetProducts {
+    products(
+        minRating: 4.5,
+        maxPrice: 99.99,
+        discount: -10.5,
+        threshold: 0.001,
+        scientific: 2.5e3
     ) {
-        results {
-            id
-            title
-            excerpt
-        }
-        totalCount
+        name
+        rating
+        price
+    }
+    analytics(
+        coordinates: {
+            lat: 40.7128,
+            lng: -74.006
+        },
+        mixed: [1, 2.5, 3, 4.75]
+    ) {
+        data
     }
 }
 `
 
-const result = graphQlQueryToJson(query, {
-    variables: {
-        text: "GraphQL tutorial",
-        limit: 10,
-        offset: 0,
-        filters: {
-            category: "tutorial",
-            difficulty: "beginner",
-            tags: ["graphql", "api"]
-        },
-        includeArchived: false
-    }
-})
+const result = graphQlQueryToJson(query)
 
 // Output:
 {
   query: {
-    search: {
+    products: {
       __args: {
-        query: "GraphQL tutorial",
-        first: 10,
-        skip: 0,
-        filters: {
-          category: "tutorial",
-          difficulty: "beginner",
-          tags: ["graphql", "api"]
+        minRating: 4.5,           // ✅ Float as number
+        maxPrice: 99.99,          // ✅ Float as number  
+        discount: -10.5,          // ✅ Negative float
+        threshold: 0.001,         // ✅ Small decimal
+        scientific: 2500          // ✅ Scientific notation (2.5e3)
+      },
+      name: true,
+      rating: true,
+      price: true
+    },
+    analytics: {
+      __args: {
+        coordinates: {
+          lat: 40.7128,           // ✅ Nested floats
+          lng: -74.006
         },
-        archived: false
+        mixed: ["1", "2.5", "3", "4.75"]  // Arrays preserve strings
       },
-      results: {
-        id: true,
-        title: true,
-        excerpt: true
-      },
-      totalCount: true
+      data: true
     }
   }
 }

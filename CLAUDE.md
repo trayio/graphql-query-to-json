@@ -37,7 +37,7 @@ The main `graphQlQueryToJson` function:
 ### Testing
 - Comprehensive Jest test suite in `src/test/full_functionality.spec.ts`
 - README examples validation tests in `src/test/readme_examples.spec.ts`
-- Tests cover queries, mutations, aliases, enums, variables, scalar fields with arguments, and error cases
+- Tests cover queries, mutations, subscriptions, aliases, enums, variables, scalar fields with arguments, float arguments (including edge cases), and error cases
 - Tests run against compiled dist/ files, so always build before testing
 - To run a single test file: `npm test -- --testNamePattern="specific test name"`
 - Current coverage: 99% statements, 98% branches (line 111 in index.ts is unreachable dead code)
@@ -48,7 +48,7 @@ The main `graphQlQueryToJson` function:
 The library processes GraphQL Abstract Syntax Trees (AST) from the `graphql` library. Key AST node types handled:
 - `OperationDefinition` - Query/mutation/subscription operations
 - `Field` - Individual field selections with optional arguments and aliases
-- `Argument` - Field arguments with various value types (string, int, enum, object, list, variable)
+- `Argument` - Field arguments with various value types (string, int, float, enum, object, list, variable)
 - `SelectionSet` - Groups of field selections
 
 ### Transformation Logic

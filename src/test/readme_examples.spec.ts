@@ -399,19 +399,21 @@ query {
     })
 
     describe("Mixed Variable Types", () => {
-        it("Various data types as variables", () => {
+        it("Various data types as variables including floats", () => {
             const query = `
 query SearchContent(
     $text: String!,
     $limit: Int!,
-    $offset: Int,
+    $rating: Float!,
+    $price: Float,
     $filters: FilterInput!,
     $includeArchived: Boolean
 ) {
     search(
         query: $text,
         first: $limit,
-        skip: $offset,
+        minRating: $rating,
+        maxPrice: $price,
         filters: $filters,
         archived: $includeArchived
     ) {
@@ -429,7 +431,8 @@ query SearchContent(
                 variables: {
                     text: "GraphQL tutorial",
                     limit: 10,
-                    offset: 0,
+                    rating: 4.8,
+                    price: 29.99,
                     filters: {
                         category: "tutorial",
                         difficulty: "beginner",
@@ -445,7 +448,8 @@ query SearchContent(
                         __args: {
                             query: "GraphQL tutorial",
                             first: 10,
-                            skip: 0,
+                            minRating: 4.8,
+                            maxPrice: 29.99,
                             filters: {
                                 category: "tutorial",
                                 difficulty: "beginner",
@@ -459,6 +463,62 @@ query SearchContent(
                             excerpt: true,
                         },
                         totalCount: true,
+                    },
+                },
+            })
+        })
+
+        it("Float arguments and numeric types", () => {
+            const query = `
+query GetProducts {
+    products(
+        minRating: 4.5,
+        maxPrice: 99.99,
+        discount: -10.5,
+        threshold: 0.001,
+        scientific: 2.5e3
+    ) {
+        name
+        rating
+        price
+    }
+    analytics(
+        coordinates: {
+            lat: 40.7128,
+            lng: -74.006
+        },
+        mixed: [1, 2.5, 3, 4.75]
+    ) {
+        data
+    }
+}
+`
+
+            const result = graphQlQueryToJson(query)
+
+            expect(result).toEqual({
+                query: {
+                    products: {
+                        __args: {
+                            minRating: 4.5,
+                            maxPrice: 99.99,
+                            discount: -10.5,
+                            threshold: 0.001,
+                            scientific: 2500,
+                        },
+                        name: true,
+                        rating: true,
+                        price: true,
+                    },
+                    analytics: {
+                        __args: {
+                            coordinates: {
+                                lat: 40.7128,
+                                lng: -74.006,
+                            },
+                            mixed: ["1", "2.5", "3", "4.75"],
+                        },
+                        data: true,
                     },
                 },
             })

@@ -88,6 +88,8 @@ const getArgumentObject = (argumentFields: Argument[]) => {
             argObj[arg.name.value] = arg.value.values
         } else if (arg.value.kind === "IntValue") {
             argObj[arg.name.value] = parseInt(arg.value.value)
+        } else if (arg.value.kind === "FloatValue") {
+            argObj[arg.name.value] = parseFloat(arg.value.value)
         } else if (arg.value.kind === "Variable") {
             argObj[arg.name.value] =
                 `${arg.value.name.value}${isVariableDropinConst}`
@@ -110,6 +112,8 @@ const getArguments = (args) => {
             argsObj[arg.name.value] = new EnumType(arg.value.value)
         } else if (arg.value.kind === "IntValue") {
             argsObj[arg.name.value] = parseInt(arg.value.value)
+        } else if (arg.value.kind === "FloatValue") {
+            argsObj[arg.name.value] = parseFloat(arg.value.value)
         } else if (arg.value.kind === "ListValue") {
             const values = flatMap(
                 arg.value.values,
