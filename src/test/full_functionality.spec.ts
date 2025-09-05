@@ -695,7 +695,7 @@ describe("Subscriptions", () => {
         }).toThrow("The parsed query has more than one set of definitions")
     })
 
-    it("Should throw error for subscription with inline fragments", () => {
+    it("Should handle subscription with inline fragments", () => {
         const subscriptionWithInlineFragment = `
             subscription {
                 messageAdded {
@@ -711,9 +711,25 @@ describe("Subscriptions", () => {
                 }
             }
         `
-        expect(() => {
-            graphQlQueryToJson(subscriptionWithInlineFragment)
-        }).toThrow()
+        expect(graphQlQueryToJson(subscriptionWithInlineFragment)).toEqual({
+            subscription: {
+                messageAdded: {
+                    id: true,
+                    content: true,
+                    __on: [
+                        {
+                            __typeName: "TextMessage",
+                            text: true,
+                        },
+                        {
+                            __typeName: "ImageMessage",
+                            imageUrl: true,
+                            caption: true,
+                        },
+                    ],
+                },
+            },
+        })
     })
 })
 
@@ -1380,6 +1396,284 @@ describe("Edge Cases and Additional Coverage", () => {
                     results: true,
                 },
             },
+        })
+    })
+
+    describe("Inline Fragments", () => {
+        it("Single inline fragment", () => {
+            const query = `
+                query {
+                    posts {
+                        title
+                        ... on TextPost {
+                            content
+                        }
+                    }
+                }
+            `
+            expect(graphQlQueryToJson(query)).toEqual({
+                query: {
+                    posts: {
+                        title: true,
+                        __on: {
+                            __typeName: "TextPost",
+                            content: true,
+                        },
+                    },
+                },
+            })
+        })
+
+        it("Multiple inline fragments", () => {
+            const query = `
+                query {
+                    posts {
+                        title
+                        ... on TextPost {
+                            content
+                            wordCount
+                        }
+                        ... on ImagePost {
+                            imageUrl
+                            altText
+                        }
+                    }
+                }
+            `
+            expect(graphQlQueryToJson(query)).toEqual({
+                query: {
+                    posts: {
+                        title: true,
+                        __on: [
+                            {
+                                __typeName: "TextPost",
+                                content: true,
+                                wordCount: true,
+                            },
+                            {
+                                __typeName: "ImagePost",
+                                imageUrl: true,
+                                altText: true,
+                            },
+                        ],
+                    },
+                },
+            })
+        })
+
+        it("Inline fragment with nested selections", () => {
+            const query = `
+                query {
+                    posts {
+                        title
+                        ... on TextPost {
+                            content
+                            author {
+                                name
+                                bio
+                            }
+                        }
+                    }
+                }
+            `
+            expect(graphQlQueryToJson(query)).toEqual({
+                query: {
+                    posts: {
+                        title: true,
+                        __on: {
+                            __typeName: "TextPost",
+                            content: true,
+                            author: {
+                                name: true,
+                                bio: true,
+                            },
+                        },
+                    },
+                },
+            })
+        })
+
+        it("Inline fragment with arguments", () => {
+            const query = `
+                query {
+                    posts {
+                        title
+                        ... on TextPost {
+                            content
+                            comments(limit: 5) {
+                                text
+                            }
+                        }
+                    }
+                }
+            `
+            expect(graphQlQueryToJson(query)).toEqual({
+                query: {
+                    posts: {
+                        title: true,
+                        __on: {
+                            __typeName: "TextPost",
+                            content: true,
+                            comments: {
+                                __args: {
+                                    limit: 5,
+                                },
+                                text: true,
+                            },
+                        },
+                    },
+                },
+            })
+        })
+
+        it("Nested inline fragments", () => {
+            const query = `
+                query {
+                    media {
+                        ... on Post {
+                            title
+                            ... on TextPost {
+                                content
+                            }
+                            ... on ImagePost {
+                                imageUrl
+                            }
+                        }
+                        ... on Comment {
+                            text
+                            author {
+                                name
+                            }
+                        }
+                    }
+                }
+            `
+            expect(graphQlQueryToJson(query)).toEqual({
+                query: {
+                    media: {
+                        __on: [
+                            {
+                                __typeName: "Post",
+                                title: true,
+                                __on: [
+                                    {
+                                        __typeName: "TextPost",
+                                        content: true,
+                                    },
+                                    {
+                                        __typeName: "ImagePost",
+                                        imageUrl: true,
+                                    },
+                                ],
+                            },
+                            {
+                                __typeName: "Comment",
+                                text: true,
+                                author: {
+                                    name: true,
+                                },
+                            },
+                        ],
+                    },
+                },
+            })
+        })
+
+        it("Inline fragment with enum arguments", () => {
+            const query = `
+                query {
+                    posts {
+                        title
+                        ... on TextPost {
+                            content(format: MARKDOWN) {
+                                rendered
+                            }
+                        }
+                    }
+                }
+            `
+            expect(graphQlQueryToJson(query)).toEqual({
+                query: {
+                    posts: {
+                        title: true,
+                        __on: {
+                            __typeName: "TextPost",
+                            content: {
+                                __args: {
+                                    format: new EnumType("MARKDOWN"),
+                                },
+                                rendered: true,
+                            },
+                        },
+                    },
+                },
+            })
+        })
+
+        it("Inline fragment with variables", () => {
+            const query = `
+                query GetPosts($limit: Int!) {
+                    posts {
+                        title
+                        ... on TextPost {
+                            comments(limit: $limit) {
+                                text
+                            }
+                        }
+                    }
+                }
+            `
+            expect(graphQlQueryToJson(query, {variables: {limit: 10}})).toEqual(
+                {
+                    query: {
+                        posts: {
+                            title: true,
+                            __on: {
+                                __typeName: "TextPost",
+                                comments: {
+                                    __args: {
+                                        limit: 10,
+                                    },
+                                    text: true,
+                                },
+                            },
+                        },
+                    },
+                },
+            )
+        })
+
+        it("Inline fragment with aliases", () => {
+            const query = `
+                query {
+                    posts {
+                        title
+                        ... on TextPost {
+                            textContent: content
+                            authorName: author {
+                                name
+                            }
+                        }
+                    }
+                }
+            `
+            expect(graphQlQueryToJson(query)).toEqual({
+                query: {
+                    posts: {
+                        title: true,
+                        __on: {
+                            __typeName: "TextPost",
+                            textContent: {
+                                __aliasFor: "content",
+                            },
+                            authorName: {
+                                __aliasFor: "author",
+                                name: true,
+                            },
+                        },
+                    },
+                },
+            })
         })
     })
 })

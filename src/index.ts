@@ -27,16 +27,23 @@ interface Argument {
 
 interface Selection {
     kind: string
-    alias: {
+    alias?: {
         kind: string
         value: string
     }
-    name: {
+    name?: {
         kind: string
         value: string
     }
     arguments?: Argument[]
     selectionSet?: SelectionSet
+    typeCondition?: {
+        kind: string
+        name: {
+            kind: string
+            value: string
+        }
+    }
 }
 
 interface SelectionSet {
@@ -128,30 +135,63 @@ const getArguments = (args) => {
 }
 
 const getSelections = (selections: Selection[]) => {
-    const selObj = {}
+    const selObj: any = {}
+    const inlineFragments = []
+
     selections.forEach((selection) => {
-        const selectionHasAlias = selection.alias
-        const selectionName = selectionHasAlias
-            ? selection.alias.value
-            : selection.name.value
-        if (selection.selectionSet) {
-            selObj[selectionName] = getSelections(
+        if (selection.kind === "InlineFragment") {
+            // Handle inline fragments
+            const typeName = selection.typeCondition.name.value
+            const fragmentSelections = getSelections(
                 selection.selectionSet.selections,
             )
-            if (selectionHasAlias) {
-                selObj[selection.alias.value].__aliasFor = selection.name.value
+            inlineFragments.push({
+                __typeName: typeName,
+                ...fragmentSelections,
+            })
+        } else {
+            // Handle regular fields
+            const selectionHasAlias = selection.alias
+            const selectionName = selectionHasAlias
+                ? selection.alias.value
+                : selection.name.value
+            if (selection.selectionSet) {
+                selObj[selectionName] = getSelections(
+                    selection.selectionSet.selections,
+                )
+                if (selectionHasAlias) {
+                    selObj[selection.alias.value].__aliasFor =
+                        selection.name.value
+                }
             }
-        }
-        if (selection.arguments.length > 0) {
-            if (!selObj[selectionName]) {
-                selObj[selectionName] = {}
+            if (selection.arguments && selection.arguments.length > 0) {
+                if (!selObj[selectionName]) {
+                    selObj[selectionName] = {}
+                }
+                selObj[selectionName].__args = getArguments(selection.arguments)
             }
-            selObj[selectionName].__args = getArguments(selection.arguments)
-        }
-        if (!selection.selectionSet && selection.arguments.length === 0) {
-            selObj[selectionName] = true
+            if (
+                !selection.selectionSet &&
+                (!selection.arguments || selection.arguments.length === 0)
+            ) {
+                if (selectionHasAlias) {
+                    selObj[selectionName] = {__aliasFor: selection.name.value}
+                } else {
+                    selObj[selectionName] = true
+                }
+            }
         }
     })
+
+    // Add inline fragments to the result
+    if (inlineFragments.length > 0) {
+        if (inlineFragments.length === 1) {
+            selObj.__on = inlineFragments[0]
+        } else {
+            selObj.__on = inlineFragments
+        }
+    }
+
     return selObj
 }
 
