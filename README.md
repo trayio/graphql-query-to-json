@@ -11,10 +11,10 @@ A TypeScript library that converts GraphQL query and mutation strings into struc
 ## Features
 
 - ✅ **Full GraphQL Support**: Queries, mutations and subscriptions
-- ✅ **Inline Fragments**: Complete support for conditional type-based field selection
 - ✅ **Variable Handling**: Complete variable substitution with validation
 - ✅ **Arguments**: All argument types (strings, integers, floats, objects, arrays, enums)
 - ✅ **Aliases**: Field aliasing with metadata preservation
+- ✅ **Inline Fragments**: Complete support for conditional type-based field selection
 - ✅ **Type Safety**: Full TypeScript support with comprehensive type definitions
 - ✅ **Error Handling**: Descriptive error messages for malformed queries and missing variables
 - ✅ **Framework Agnostic**: Works with any JavaScript/TypeScript environment
@@ -816,8 +816,8 @@ const result = graphQlQueryToJson(subscription)
 While the library supports the core GraphQL features, there are some limitations:
 
 ### Fragment Support
-- **Named Fragments**: Not supported due to multiple definition restriction
 - **Inline Fragments**: ✅ **Fully Supported** (e.g., `... on TypeName`)
+- **Named Fragments**: Not supported due to multiple definition restriction
 
 ```ts
 // ❌ Named fragments still throw an error
