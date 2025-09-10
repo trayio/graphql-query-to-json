@@ -1,6 +1,6 @@
 {
     "name": "graphql-query-to-json",
-    "version": "2.0.4",
+    "version": "2.0.5",
     "description": "Convert graphQL queries and mutations to easily readable JSON representations.",
     "main": "dist/index.js",
     "scripts": {
